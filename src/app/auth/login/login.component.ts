@@ -1,22 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { AuthService } from '../auth.service';
+import { AuthDirective } from '../auth.directive';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
 })
-export class LoginComponent implements OnInit {
-  loginForm: FormGroup = new FormGroup({});
-  isLoading: boolean = false;
-  error: string = '';
-
-  constructor(private authService: AuthService, private router: Router) {}
-
+export class LoginComponent extends AuthDirective implements OnInit {
   ngOnInit(): void {
-    this.loginForm = new FormGroup({
+    this.authForm = new FormGroup({
       //todo: improve login "header"
       email: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', [
@@ -27,31 +20,11 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit() {
-    if (!this.loginForm.valid) {
-      return;
-    } else {
-      const email = this.loginForm.value.email;
-      const password = this.loginForm.value.password;
-      this.isLoading = true;
-
-      this.authService.login(email, password).subscribe({
-        next: (resData) => {
-          console.log(resData);
-          this.isLoading = false;
-          this.router.navigate(['/dashboard']);
-        },
-        error: (errorMessage) => {
-          console.log(errorMessage);
-          this.error = errorMessage;
-          this.isLoading = false;
-        },
-      });
-
-      this.loginForm.reset();
-    }
-  }
-
-  onHandleError() {
-    this.error = '';
+    this.handleAuth(
+      this.authService.login(
+        this.authForm.value.email,
+        this.authForm.value.password
+      )
+    );
   }
 }
