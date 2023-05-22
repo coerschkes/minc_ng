@@ -42,7 +42,7 @@
                 class="btn btn-primary btn-lg"
                 style="width: 100%"
                 type="submit"
-                [disabled]="!apiKeyIsValid"
+                [disabled]="!apiKeyIsValid || !signupForm.valid"
               >
                 Create Account
               </button>

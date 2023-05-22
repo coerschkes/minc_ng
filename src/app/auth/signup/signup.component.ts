@@ -16,9 +16,9 @@ export class SignupComponent implements OnInit {
 
   constructor(private authService: AuthService, private router: Router) {}
 
-  //todo: add loading spinner and text (check for is in use, check for has permissions) while api key is being validated
-  //todo: display message when check is failing
+  //all shown only when api key is valid
   //todo: go "forward" in the "wizard" when check is passing
+  //todo: add input for guild select and organizer/team member
 
   ngOnInit(): void {
     //todo: form validation and error handling
