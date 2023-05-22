@@ -1,8 +1,3 @@
-<app-alert
-  [message]="error"
-  *ngIf="error"
-  (close)="onHandleError()"
-></app-alert>
 <section class="vh-100 scaffold-background">
   <div class="container py-5 h-100">
     <div class="row d-flex justify-content-center align-items-center h-100">
@@ -42,6 +37,13 @@
               >
                 Login
               </button>
+              <br />
+              <br />
+              <app-alert
+                [message]="error"
+                *ngIf="error"
+                (close)="onHandleError()"
+              ></app-alert>
             </form>
             <div>
               <p class="mb-0 subtitle-grey" style="padding-top: 16px">

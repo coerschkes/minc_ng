@@ -4,11 +4,9 @@ import { throwError } from 'rxjs';
 export class AuthErrorHandler {
   static handleError(errorRes: HttpErrorResponse) {
     if (!errorRes.error || !errorRes.error.error) {
-      return throwError(() => new Error('An unknown error occurred!'));
+      return throwError(() => 'An unknown error occurred!');
     } else {
-      return throwError(
-        () => new Error(AuthErrorHandler.mapFirebaseError(errorRes))
-      );
+      return throwError(() => AuthErrorHandler.mapFirebaseError(errorRes));
     }
   }
 

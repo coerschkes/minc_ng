@@ -1,8 +1,7 @@
-<div class="backdrop" (click)="onClose()">
-  <div class="alert-box">
-    <p>{{ message }}</p>
-    <div class="alert-box-actions">
-      <button class="btn btn-primary" (click)="onClose()">Close</button>
-    </div>
-  </div>
+<div
+  class="alert alert-{{ alertType }} alert-dismissible fade show"
+  role="alert"
+>
+  {{ message }}
+  <button type="button" class="btn-close" (click)="onClose()"></button>
 </div>
