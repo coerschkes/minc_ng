@@ -1,1 +1,59 @@
-/* You can add global styles to this file, and also import other style files */
+/* {
+  COLOR PALETTE
+
+  "Primary": {
+    "50": "#efe5fd",
+    "100": "#d4bff9",
+    "200": "#b794f6",
+    "300": "#9965f4",
+    "400": "#7e3ff2",
+    "500": "#6002ee",
+    "600": "#5300e8",
+    "700": "#3d00e0",
+    "800": "#1d00db",
+    "900": "#0000d6"
+  },
+  "Secondary": {
+    "50": "#fafafa",
+    "100": "#f5f5f5",
+    "200": "#eeeeee",
+    "300": "#e0e0e0",
+    "400": "#bdbdbd",
+    "500": "#9f9f9f",
+    "600": "#757575",
+    "700": "#616161",
+    "800": "#424242",
+    "900": "#212121"
+  }
+} */
+
+.subtitle-grey{
+  color: #757575;
+}
+
+.scaffold-background{
+  background-color: hsl(0, 0%, 96%)
+}
+
+.btn-primary{
+  background-color: #6002ee;
+  border-color: #6002ee;
+  transition: all .3s;
+}
+
+.btn-primary:hover{
+  color: #424242;
+  background-color: #d4bff9;
+  border-color: #d4bff9;
+}
+
+.btn-primary:disabled{
+  background-color: #7e3ff2;
+  border-color: #7e3ff2;
+}
+
+.form-control:focus {
+  border-color: #d4bff9;
+  box-shadow: 0 0 0 0.2rem #d4bff9;
+}
+
