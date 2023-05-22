@@ -17,12 +17,8 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     this.loginForm = new FormGroup({
-      // todo: add api key validator
-      // apiKey: new FormControl('', [Validators.required]),
-      //todo: add username validator
-      // username: new FormControl('', [Validators.required]),
+      //todo: improve login "header"
       email: new FormControl('', [Validators.required, Validators.email]),
-      //todo: add password validator
       password: new FormControl('', [
         Validators.required,
         Validators.minLength(6),
