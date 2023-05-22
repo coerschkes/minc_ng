@@ -6,7 +6,9 @@ export class AuthErrorHandler {
     if (!errorRes.error || !errorRes.error.error) {
       return throwError(() => new Error('An unknown error occurred!'));
     } else {
-      return throwError(() => new Error(this.mapFirebaseError(errorRes)));
+      return throwError(
+        () => new Error(AuthErrorHandler.mapFirebaseError(errorRes))
+      );
     }
   }
 
