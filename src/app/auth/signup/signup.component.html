@@ -17,15 +17,6 @@
 
               <div class="form-outline mb-4" *ngIf="apiKeyIsValid">
                 <input
-                  type="text"
-                  id="username-2"
-                  class="form-control form-control-lg"
-                />
-                <label class="form-label" for="username">Username</label>
-              </div>
-
-              <div class="form-outline mb-4" *ngIf="apiKeyIsValid">
-                <input
                   type="email"
                   id="email"
                   class="form-control form-control-lg"
@@ -56,7 +47,11 @@
             <div>
               <p class="mb-0 subtitle-grey" style="padding-top: 16px">
                 Already have an account?
-                <a href="#!" class="fw-bold subtitle-grey">Login</a>
+                <a
+                  [routerLink]="['/auth', 'login']"
+                  class="fw-bold subtitle-grey"
+                  >Login</a
+                >
               </p>
             </div>
           </div>

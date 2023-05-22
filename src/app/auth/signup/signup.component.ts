@@ -19,16 +19,16 @@ export class SignupComponent implements OnInit {
   //todo: add loading spinner and text (check for is in use, check for has permissions) while api key is being validated
   //todo: display message when check is failing
   //todo: go "forward" in the "wizard" when check is passing
-  //have a button for submitting the "check"
 
   ngOnInit(): void {
+    //todo: form validation and error handling
     this.signupForm = new FormGroup({
       // todo: add api key validator
       // apiKey: new FormControl('', [Validators.required]),
-      //todo: add username validator
-      // username: new FormControl('', [Validators.required]),
       email: new FormControl('', [Validators.required, Validators.email]),
       //todo: add password validator
+      //todo: add second password field
+      //todo: show password feature
       password: new FormControl('', [
         Validators.required,
         Validators.minLength(6),
