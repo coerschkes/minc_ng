@@ -1,14 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
+import { AuthGuard } from './auth.guard';
 import { LoginComponent } from './login/login.component';
 import { SignupComponent } from './signup/signup.component';
 
 const routes: Routes = [
   {
     path: '',
+    canActivate: [AuthGuard],
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'login' },
       {
@@ -25,10 +26,6 @@ const routes: Routes = [
 
 @NgModule({
   declarations: [LoginComponent, SignupComponent],
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    RouterModule.forChild(routes),
-  ],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule.forChild(routes)],
 })
 export class AuthModule {}
