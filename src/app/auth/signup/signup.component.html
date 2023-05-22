@@ -29,6 +29,7 @@
                   type="email"
                   id="email"
                   class="form-control form-control-lg"
+                  formControlName="email"
                 />
                 <label class="form-label" for="email">Email</label>
               </div>
@@ -38,6 +39,7 @@
                   type="password"
                   id="password"
                   class="form-control form-control-lg"
+                  formControlName="password"
                 />
                 <label class="form-label" for="password">Password</label>
               </div>
@@ -46,7 +48,8 @@
                 class="btn btn-primary btn-lg"
                 style="width: 100%"
                 type="submit"
-              [disabled]="!apiKeyIsValid">
+                [disabled]="!apiKeyIsValid"
+              >
                 Create Account
               </button>
             </form>

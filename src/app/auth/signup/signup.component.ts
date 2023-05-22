@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-signup',
@@ -9,8 +11,10 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 export class SignupComponent implements OnInit {
   signupForm: FormGroup = new FormGroup({});
   apiKeyIsValid: boolean = true;
+  isLoading: boolean = false;
+  error: string = '';
 
-  constructor() {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   //todo: add loading spinner and text (check for is in use, check for has permissions) while api key is being validated
   //todo: display message when check is failing
@@ -20,9 +24,9 @@ export class SignupComponent implements OnInit {
   ngOnInit(): void {
     this.signupForm = new FormGroup({
       // todo: add api key validator
-      apiKey: new FormControl('', [Validators.required]),
+      // apiKey: new FormControl('', [Validators.required]),
       //todo: add username validator
-      username: new FormControl('', [Validators.required]),
+      // username: new FormControl('', [Validators.required]),
       email: new FormControl('', [Validators.required, Validators.email]),
       //todo: add password validator
       password: new FormControl('', [
@@ -33,6 +37,27 @@ export class SignupComponent implements OnInit {
   }
 
   onSubmit() {
-    throw new Error('Method not implemented.');
+    if (!this.signupForm.valid) {
+      return;
+    } else {
+      const email = this.signupForm.value.email;
+      const password = this.signupForm.value.password;
+      this.isLoading = true;
+
+      this.authService.signup(email, password).subscribe({
+        next: (resData) => {
+          console.log(resData);
+          this.isLoading = false;
+          this.router.navigate(['/dashboard']);
+        },
+        error: (errorMessage) => {
+          console.log(errorMessage);
+          this.error = errorMessage;
+          this.isLoading = false;
+        },
+      });
+
+      this.signupForm.reset();
+    }
   }
 }
