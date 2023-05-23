@@ -137,8 +137,8 @@ body {
 }
 
 .form-control:focus {
-  border-color: var(--light-primary);
-  box-shadow: 0 0 0 0.1rem var(--light-primary);
+  border-color: var(--light-primary-container);
+  box-shadow: 0 0 0 0.1rem var(--light-primary-container);
 }
 
 .alert-danger {
