@@ -17,21 +17,28 @@ export class SignupComponent extends AuthDirective implements OnInit {
 
   ngOnInit(): void {
     //todo: form validation and error handling
+    // todo: add api key validator
+    // apiKey: new FormControl('', [Validators.required]),
+    //todo: add password validator
+    //todo: add second password field
+    //todo: show password feature
+    this.initForm();
+  }
+
+  initForm() {
     this.authForm = new FormGroup({
-      // todo: add api key validator
-      // apiKey: new FormControl('', [Validators.required]),
+      apiKey: new FormControl('', [Validators.required]),
       email: new FormControl('', [Validators.required, Validators.email]),
-      //todo: add password validator
-      //todo: add second password field
-      //todo: show password feature
       password: new FormControl('', [
         Validators.required,
         Validators.minLength(6),
       ]),
+      status: new FormControl('Member', [Validators.required]),
     });
   }
 
   onSubmit() {
+    console.log(this.authForm.value);
     this.handleAuth(
       this.authService.signup(
         this.authForm.value.email,

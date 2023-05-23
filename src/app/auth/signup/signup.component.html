@@ -12,9 +12,9 @@
               <div class="form-outline mb-4">
                 <input
                   type="text"
-                  id="apiKey-2"
                   class="form-control form-control-lg"
                   placeholder="API Key"
+                  formControlName="apiKey"
                 />
               </div>
 
@@ -24,14 +24,15 @@
                     <input
                       type="radio"
                       class="btn-check"
-                      name="options"
-                      id="option1"
-                      autocomplete="off"
-                      checked
+                      name="status"
+                      id="{{ status }}"
+                      [value]="status"
+                      formControlName="status"
+                      required
                     />
                     <label
                       class="btn btn-secondary btn-lg d-grid"
-                      for="option1"
+                      for="{{ status }}"
                       >{{ status }}</label
                     >
                   </div>
@@ -41,7 +42,6 @@
               <div class="form-outline mb-4" *ngIf="apiKeyIsValid">
                 <input
                   type="email"
-                  id="email"
                   class="form-control form-control-lg"
                   formControlName="email"
                   placeholder="Email"
@@ -51,7 +51,6 @@
               <div class="form-outline mb-4" *ngIf="apiKeyIsValid">
                 <input
                   type="password"
-                  id="password"
                   class="form-control form-control-lg"
                   formControlName="password"
                   placeholder="Password"
@@ -75,11 +74,11 @@
               ></app-alert>
             </form>
             <div>
-              <p class="mb-0 subtitle-variant " style="padding-top: 16px">
+              <p class="mb-0 subtitle-variant" style="padding-top: 16px">
                 Already have an account?
                 <a
                   [routerLink]="['/auth', 'login']"
-                  class="fw-bold subtitle-variant "
+                  class="fw-bold subtitle-variant"
                   >Login</a
                 >
               </p>
