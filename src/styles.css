@@ -13,9 +13,9 @@
   --light-tertiary-container: #ffd8e4;
   --light-tertiary-container-hover: #31111d;
   --light-error: #b3261e;
-  --light-error-hover: #b3261e;
-  --light-error-container: #b3261e;
-  --light-error-container-hover: #b3261e;
+  --light-error-hover: #ffffff;
+  --light-error-container: #f9dedc;
+  --light-error-container-hover: #410e0b;
   --light-background: #fffbfe;
   --light-background-hover: #1c1b1f;
   --light-surface: #fffbfe;
@@ -117,13 +117,12 @@ body {
   border-color: var(--light-tertiary);
 }
 
-
 .btn-check:checked + .btn {
   background-color: var(--light-secondary);
   opacity: 1;
 }
 
-.btn-check+.btn{
+.btn-check + .btn {
   color: var(--light-secondary);
   background-color: var(--light-secondary-container);
   border-color: var(--light-secondary);
@@ -142,3 +141,8 @@ body {
   box-shadow: 0 0 0 0.1rem var(--light-primary);
 }
 
+.alert-danger {
+  color: var(--light-error);
+  border-color: var(--light-error);
+  background-color: var(--light-error-container);
+}
