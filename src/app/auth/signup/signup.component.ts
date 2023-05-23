@@ -9,6 +9,7 @@ import { AuthDirective } from '../auth.directive';
 })
 export class SignupComponent extends AuthDirective implements OnInit {
   apiKeyIsValid: boolean = true;
+  memberStatus = ['Lead', 'Member'];
 
   //all shown only when api key is valid
   //todo: go "forward" in the "wizard" when check is passing

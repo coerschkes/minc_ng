@@ -1,11 +1,11 @@
 <div *ngIf="isLoading" style="text-align: center">
   <app-loading-spinner></app-loading-spinner>
 </div>
-<section class="vh-100 scaffold-background">
+<section class="vh-100">
   <div class="container py-5 h-100">
     <div class="row d-flex justify-content-center align-items-center h-100">
       <div class="col-12 col-md-8 col-lg-6 col-xl-5">
-        <div class="card shadow-2-strong" style="border-radius: 1rem">
+        <div class="card shadow-2-strong scaffold" style="border-radius: 1rem">
           <div class="card-body p-5 text-center">
             <h3 class="mb-5">Sign up</h3>
             <form [formGroup]="authForm" (ngSubmit)="onSubmit()">
@@ -16,6 +16,26 @@
                   class="form-control form-control-lg"
                   placeholder="API Key"
                 />
+              </div>
+
+              <div class="form-outline mb-4">
+                <div class="btn-group" style="width: 100%">
+                  <div class="col" *ngFor="let status of memberStatus">
+                    <input
+                      type="radio"
+                      class="btn-check"
+                      name="options"
+                      id="option1"
+                      autocomplete="off"
+                      checked
+                    />
+                    <label
+                      class="btn btn-secondary btn-lg d-grid"
+                      for="option1"
+                      >{{ status }}</label
+                    >
+                  </div>
+                </div>
               </div>
 
               <div class="form-outline mb-4" *ngIf="apiKeyIsValid">
@@ -55,11 +75,11 @@
               ></app-alert>
             </form>
             <div>
-              <p class="mb-0 subtitle-grey" style="padding-top: 16px">
+              <p class="mb-0 subtitle-variant " style="padding-top: 16px">
                 Already have an account?
                 <a
                   [routerLink]="['/auth', 'login']"
-                  class="fw-bold subtitle-grey"
+                  class="fw-bold subtitle-variant "
                   >Login</a
                 >
               </p>
