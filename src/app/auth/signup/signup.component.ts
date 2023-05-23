@@ -13,15 +13,14 @@ export class SignupComponent extends AuthDirective implements OnInit {
 
   //all shown only when api key is valid
   //todo: go "forward" in the "wizard" when check is passing
-  //todo: add input for guild select and organizer/team member
 
   ngOnInit(): void {
-    //todo: form validation and error handling
+    //todo: form validation
     // todo: add api key validator
-    // apiKey: new FormControl('', [Validators.required]),
     //todo: add password validator
-    //todo: add second password field
+    //todo: add second password field?
     //todo: show password feature
+    //todo: validate api key with backend call
     this.initForm();
   }
 
