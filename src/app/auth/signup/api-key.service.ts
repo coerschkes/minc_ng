@@ -32,6 +32,7 @@ export class ApiKeyService {
         this.account.next(resData);
       },
       error: (errorMessage) => {
+        this.account.next(Account.invalid());
         this.handleErrror(errorMessage);
       },
       complete: () => {
