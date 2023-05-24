@@ -1,6 +1,3 @@
-<div *ngIf="isLoading && accountIsValid()" style="text-align: center">
-  <app-loading-spinner></app-loading-spinner>
-</div>
 <section class="vh-100">
   <div class="container py-5 h-100">
     <div class="row d-flex justify-content-center align-items-center h-100">
@@ -86,6 +83,9 @@
                 ></app-alert>
               </div>
             </form>
+            <div *ngIf="isLoading && accountIsValid()" style="text-align: center">
+              <app-loading-spinner></app-loading-spinner>
+            </div>
             <div>
               <p class="mb-0 subtitle-variant" style="padding-top: 16px">
                 Already have an account?

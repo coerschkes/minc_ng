@@ -46,6 +46,7 @@ export class SignupComponent implements OnInit, OnDestroy {
         this.loadingState = loadingState;
       }
     );
+    //todo: prevent multi-signup / login after several tries?
     //todo: form validation
     //todo: add api key validator
     //todo: add password validator
