@@ -80,13 +80,12 @@
               >
                 Create Account
               </button>
-              <br />
-              <br />
-              <app-alert
-                [message]="error"
-                *ngIf="error !== ''"
-                (close)="onHandleError()"
-              ></app-alert>
+              <div *ngIf="error !== ''" class="form-outline mb-4">
+                <app-alert
+                  [message]="error"
+                  (close)="onHandleError()"
+                ></app-alert>
+              </div>
             </form>
             <div>
               <p class="mb-0 subtitle-variant" style="padding-top: 16px">
