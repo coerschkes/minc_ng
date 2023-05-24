@@ -83,7 +83,10 @@
                 ></app-alert>
               </div>
             </form>
-            <div *ngIf="isLoading && accountIsValid()" style="text-align: center">
+            <div
+              *ngIf="isLoading && accountIsValid()"
+              style="text-align: center"
+            >
               <app-loading-spinner></app-loading-spinner>
             </div>
             <div>

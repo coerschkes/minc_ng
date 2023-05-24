@@ -80,6 +80,7 @@ export class SignupComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
+    //make sure only the validated api key gets persisted!
     // this.api.getAccount(this.authForm.value.apiKey).subscribe((resData) => {
     //   this.accountInfo = resData;
     // });
