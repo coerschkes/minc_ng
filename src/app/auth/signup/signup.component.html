@@ -7,7 +7,9 @@
       <div class="col-12 col-md-8 col-lg-6 col-xl-5">
         <div class="card shadow-2-strong scaffold" style="border-radius: 1rem">
           <div class="card-body p-5 text-center">
-            <h3 class="mb-5">Sign up</h3>
+            <h3 class="mb-5">
+              Sign up {{ accountIsValid() ? "as: " + account.name : "" }}
+            </h3>
             <form [formGroup]="authForm" (ngSubmit)="onSubmit()">
               <div class="form-outline mb-4">
                 <input
@@ -16,9 +18,6 @@
                   placeholder="API Key"
                   formControlName="apiKey"
                 />
-                <p *ngIf="accountIsValid()" class="subtitle-variant">
-                  Account: {{ account.name }}
-                </p>
               </div>
               <div class="form-outline mb-4">
                 <button
