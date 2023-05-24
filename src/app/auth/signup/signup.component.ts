@@ -1,26 +1,65 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { AuthDirective } from '../auth.directive';
+import { Subscription } from 'rxjs';
+import { Account } from 'src/app/shared/application/api/model/account.model';
+import { ApiKeyService } from './api-key.service';
 
 @Component({
   selector: 'app-signup',
   templateUrl: './signup.component.html',
   styleUrls: ['./signup.component.css'],
 })
-export class SignupComponent extends AuthDirective implements OnInit {
-  // accountInfo: AccountInfo = AccountInfo.invalid;
+export class SignupComponent implements OnInit, OnDestroy {
+  authForm: FormGroup = new FormGroup({});
+  //mirrored from signup service
+  isLoading: boolean = false;
+  error: string = '';
+  account: Account = Account.invalid();
+  apiPermissions: string[] = [];
+  loadingState: string = '';
+  //subscriptions to signup service
+  isLoadingSub: Subscription = new Subscription();
+  errorSub: Subscription = new Subscription();
+  accountSub: Subscription = new Subscription();
+  apiPermissionsSub: Subscription = new Subscription();
+  loadingStateSub: Subscription = new Subscription();
 
-  //all shown only when api key is valid
-  //todo: go "forward" in the "wizard" when check is passing
+  constructor(private apiKeyService: ApiKeyService) {}
 
   ngOnInit(): void {
+    this.isLoadingSub = this.apiKeyService.isLoading.subscribe((isLoading) => {
+      this.isLoading = isLoading;
+    });
+    this.errorSub = this.apiKeyService.error.subscribe((error) => {
+      this.error = error;
+    });
+    this.accountSub = this.apiKeyService.account.subscribe((account) => {
+      this.account = account;
+    });
+    this.apiPermissionsSub = this.apiKeyService.apiPermissions.subscribe(
+      (apiPermissions) => {
+        this.apiPermissions = apiPermissions;
+      }
+    );
+    this.loadingStateSub = this.apiKeyService.loadingState.subscribe(
+      (loadingState) => {
+        this.loadingState = loadingState;
+      }
+    );
     //todo: form validation
-    // todo: add api key validator
+    //todo: add api key validator
     //todo: add password validator
     //todo: add second password field?
     //todo: show password feature
-    //todo: validate api key with backend call
     this.initForm();
+  }
+
+  ngOnDestroy(): void {
+    this.isLoadingSub.unsubscribe();
+    this.errorSub.unsubscribe();
+    this.accountSub.unsubscribe();
+    this.apiPermissionsSub.unsubscribe();
+    this.loadingStateSub.unsubscribe();
   }
 
   initForm() {
@@ -35,49 +74,20 @@ export class SignupComponent extends AuthDirective implements OnInit {
     });
   }
 
-  onCheckApiKey() {
-    this.apiService.apiKey = this.authForm.value.apiKey;
-    this.apiService.account.subscribe((resData) => {
-      console.log(resData);
-    });
-    this.apiService.tokenInfo.subscribe((resData) => {
-      console.log('tokeninfo: ' + resData.permissions);
-    });
-
-    //check if account is used already
-    // this.isLoading = true;
-    // this.api.getAccount(this.authForm.value.apiKey).subscribe({
-    //   next: (resData: AccountInfo) => {
-    //     this.accountInfo = resData;
-    //     this.isLoading = false;
-    //   },
-    //   error: (errorMessage) => {
-    //     this.error = errorMessage;
-    //     this.isLoading = false;
-    //   },
-    //   complete: () => {
-    //     console.log(this.accountInfo);
-    //     console.log(this.accountInfoValid);
-    //     this.authForm.get('apiKey')?.disable();
-    //   },
-    // });
-    //check if account is in guild
+  onValidateApiKey() {
+    this.apiKeyService.validateApiKey(this.authForm.value.apiKey);
   }
 
   onSubmit() {
     // this.api.getAccount(this.authForm.value.apiKey).subscribe((resData) => {
     //   this.accountInfo = resData;
     // });
-
     // console.log(this.accountInfo);
-
     // if (this.authForm.valid && this.accountInfo.isValid) {
     // this.isLoading = true;
-
     // const email = this.authForm.value.email;
     // const password = this.authForm.value.password;
     // const apiKey = this.authForm.value.apiKey;
-
     // this.authService.signup(email, password).subscribe({
     //   next: (resData: any) => {
     //     this.persistMetadata(apiKey, resData['localId']);
@@ -89,7 +99,6 @@ export class SignupComponent extends AuthDirective implements OnInit {
     //     this.isLoading = false;
     //   },
     // });
-
     // this.authForm.reset();
     // this.router.navigate(['/dashboard']);
     // } else {
@@ -97,22 +106,11 @@ export class SignupComponent extends AuthDirective implements OnInit {
     // }
   }
 
-  get accountInfoValid() {
-    return true;
-    // return (
-    //   this.accountInfo.username !== '' &&
-    //   this.accountInfo.world !== 0 &&
-    //   this.accountInfo.guilds.length > 0
-    // );
+  onHandleError() {
+    this.error = '';
   }
 
-  private persistMetadata(apiKey: string, userId: string) {
-    // const metadata = <UserMetadata>{
-    //   username: this.accountInfo.username,
-    //   apiKey: apiKey,
-    //   roles: ['Member'],
-    // };
-    // this.db.persistUserMetadata(userId, metadata);
-    // this.authService.userMetadataSubject.next(metadata);
+  accountIsValid(): boolean {
+    return Account.isValid(this.account);
   }
 }

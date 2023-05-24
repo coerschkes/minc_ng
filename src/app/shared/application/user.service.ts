@@ -12,6 +12,20 @@ const dbUrl = environment.firebaseDbUrl;
 export class UserService {
   constructor(private http: HttpClient, private auth: AuthService) {}
 
+  //todo: implement delete methods
+
+  saveUsername(username: string): Observable<string> {
+    return this.http
+      .put<string>(dbUrl + 'usernames.json', username)
+      .pipe(catchError(this.handleError.bind(this)));
+  }
+
+  loadUsernames(): Observable<string[]> {
+    return this.http
+      .get<string[]>(dbUrl + 'usernames.json')
+      .pipe(catchError(this.handleError.bind(this)));
+  }
+
   saveUser(user: User): Observable<User> {
     return this.auth.principalSubject.pipe(
       take(1),

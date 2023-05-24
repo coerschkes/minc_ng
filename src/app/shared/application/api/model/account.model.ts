@@ -17,7 +17,7 @@ export class Account {
     public build_storage_slots?: number
   ) {}
 
-  public toString = (): string => {
+  toString = (): string => {
     return (
       'Account: {$this.name, $this.id, $this.age, $this.world, ' +
       '$this.guilds, $this.created, $this.access, $this.commander, ' +
@@ -25,4 +25,18 @@ export class Account {
       '$this.daily_ap, $this.monthly_ap, $this.wvw_rank, $this.build_storage_slots}'
     );
   };
+
+  static isValid(account: Account): boolean {
+    return (
+      account.id !== '' &&
+      account.name !== '' &&
+      account.world !== 0 &&
+      account.guilds !== null &&
+      account.guilds.length > 0
+    );
+  }
+
+  static invalid(): Account {
+    return new Account('', 0, '', 0, [], '', [], false, '', [], 0, 0, 0, 0, 0);
+  }
 }
