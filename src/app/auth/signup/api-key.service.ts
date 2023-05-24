@@ -21,6 +21,7 @@ export class ApiKeyService {
 
   validateApiKey(apiKey: string) {
     this.api.apiKey = apiKey;
+    this.error.next('');
     this.isLoading.next(true);
     this.loadAccountInfo();
   }
@@ -90,8 +91,8 @@ export class ApiKeyService {
     });
   }
 
-  private handleErrror(errorObj: any) {
-    this.error.next(errorObj);
+  private handleErrror(error: string) {
+    this.error.next(error);
     this.isLoading.next(false);
   }
 }

@@ -39,9 +39,9 @@ export class ApiService {
   }
 
   handleError(errorRes: HttpErrorResponse) {
-    //todo: proper error handling
-    return throwError(() => {
-      errorRes;
-    });
+    //todo handle error
+    return throwError(
+      () => 'STATUS: ' + errorRes.status + ' MESSAGE: ' + errorRes.error.message
+    );
   }
 }
