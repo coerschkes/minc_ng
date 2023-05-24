@@ -1,4 +1,4 @@
-export class User {
+export class Principal {
   constructor(
     public email: string,
     public id: string,
@@ -27,6 +27,6 @@ export class User {
   }
 
   static get invalid() {
-    return new User('', '', '', new Date());
+    return new Principal('', '', '', new Date());
   }
 }

@@ -6,7 +6,7 @@ import { catchError, map, take, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { AuthErrorHandler } from './auth-error-handler.component';
 import { LocalStorageService } from './local-storage.service';
-import { User } from './user.model';
+import { Principal } from './principal.model';
 
 const firebaseSignupUrl =
   'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=' +
@@ -28,7 +28,7 @@ export interface AuthResponseData {
 //todo: refresh token and change token expiration timer
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  userSubject = new BehaviorSubject<User>(User.invalid);
+  principalSubject = new BehaviorSubject<Principal>(Principal.invalid);
   tokenExpirationTimer: any;
 
   constructor(
@@ -60,9 +60,9 @@ export class AuthService {
   }
 
   logout() {
-    this.userSubject.next(User.invalid);
+    this.principalSubject.next(Principal.invalid);
     this.router.navigate(['/auth']);
-    localStorage.removeItem('userData');
+    localStorage.removeItem('principal');
     if (this.tokenExpirationTimer) {
       clearTimeout(this.tokenExpirationTimer);
     }
@@ -76,7 +76,7 @@ export class AuthService {
       return;
     }
     if (loadedUser.token) {
-      this.userSubject.next(loadedUser);
+      this.principalSubject.next(loadedUser);
       const expirationDuration =
         new Date(loadedUser.tokenExpirationDate).getTime() -
         new Date().getTime();
@@ -91,7 +91,7 @@ export class AuthService {
   }
 
   isLoggedIn() {
-    return this.userSubject.pipe(
+    return this.principalSubject.pipe(
       take(1),
       map((user) => {
         console.log(user);
@@ -104,13 +104,13 @@ export class AuthService {
     const expirationDate = new Date(
       new Date().getTime() + +authResponseData.expiresIn * 1000
     );
-    const user = new User(
+    const user = new Principal(
       authResponseData.email,
       authResponseData.localId,
       authResponseData.idToken,
       expirationDate
     );
-    this.userSubject.next(user);
-    localStorage.setItem('userData', JSON.stringify(user));
+    this.principalSubject.next(user);
+    localStorage.setItem('principal', JSON.stringify(user));
   }
 }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { User } from './user.model';
+import { Principal } from './principal.model';
 
 interface UserData {
   email: string;
@@ -10,12 +10,12 @@ interface UserData {
 
 @Injectable({ providedIn: 'root' })
 export class LocalStorageService {
-  getStoredUser(): User | null {
+  getStoredUser(): Principal | null {
     const userData = this.loadUserData();
     if (!userData) {
       return null;
     } else {
-      return new User(
+      return new Principal(
         userData.email,
         userData.id,
         userData._token,
@@ -25,7 +25,7 @@ export class LocalStorageService {
   }
 
   private loadUserData(): UserData | null {
-    const loadedUserData = localStorage.getItem('userData');
+    const loadedUserData = localStorage.getItem('principal');
     if (!loadedUserData) {
       return null;
     } else {

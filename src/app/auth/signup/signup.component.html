@@ -1,4 +1,4 @@
-<div *ngIf="isLoading" style="text-align: center">
+<div *ngIf="isLoading && accountInfoValid" style="text-align: center">
   <app-loading-spinner></app-loading-spinner>
 </div>
 <section class="vh-100">
@@ -16,9 +16,22 @@
                   placeholder="API Key"
                   formControlName="apiKey"
                 />
+                <p *ngIf="accountInfoValid" class="subtitle-variant">
+                  <!-- Account: {{ accountInfo.username }} -->
+                </p>
               </div>
+              <button
+                class="btn btn-primary btn-lg"
+                style="width: 100%"
+                type="button"
+                [disabled]="!authForm.get('apiKey')?.valid"
+                (click)="onCheckApiKey()"
+                *ngIf="!accountInfoValid"
+              >
+                {{ isLoading ? "Checking.." : "Check API Key" }}
+              </button>
 
-              <div class="form-outline mb-4">
+              <!-- <div class="form-outline mb-4">
                 <div class="btn-group" style="width: 100%">
                   <div class="col" *ngFor="let status of memberStatus">
                     <input
@@ -37,9 +50,9 @@
                     >
                   </div>
                 </div>
-              </div>
+              </div> -->
 
-              <div class="form-outline mb-4" *ngIf="apiKeyIsValid">
+              <div class="form-outline mb-4" *ngIf="accountInfoValid">
                 <input
                   type="email"
                   class="form-control form-control-lg"
@@ -48,7 +61,7 @@
                 />
               </div>
 
-              <div class="form-outline mb-4" *ngIf="apiKeyIsValid">
+              <div class="form-outline mb-4" *ngIf="accountInfoValid">
                 <input
                   type="password"
                   class="form-control form-control-lg"
@@ -61,7 +74,8 @@
                 class="btn btn-primary btn-lg"
                 style="width: 100%"
                 type="submit"
-                [disabled]="!apiKeyIsValid || !authForm.valid"
+                [disabled]="!accountInfoValid || !authForm.valid"
+                *ngIf="accountInfoValid"
               >
                 Create Account
               </button>
