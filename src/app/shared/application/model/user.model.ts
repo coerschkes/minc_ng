@@ -17,12 +17,12 @@ export class User {
     return new User('', '', []);
   }
 
-  static isInvalid(user: User): boolean {
+  static isValid(user: User): boolean {
     return (
-      user.apiKey === '' ||
-      user.username === '' ||
-      user.roles.length === null ||
-      user.roles.length === 0
+      user.apiKey !== '' &&
+      user.username !== '' &&
+      user.roles.length !== null &&
+      user.roles.length !== 0
     );
   }
 }
