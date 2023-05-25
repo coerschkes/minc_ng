@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 import { SharedModule } from '../shared/shared.module';
+import { AuthResolver } from './auth-resolver.service';
 import { AuthGuard } from './auth.guard';
 import { LoginComponent } from './login/login.component';
 import { SignupComponent } from './signup/signup.component';
@@ -11,6 +12,7 @@ const routes: Routes = [
   {
     path: '',
     canActivate: [AuthGuard],
+    resolve: [AuthResolver],
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'login' },
       {
