@@ -30,7 +30,8 @@ export class SignupComponent implements OnInit, OnDestroy {
   //todo: test signup process, especially errors! -> what happens if user not persisting? what happens when wrong url?
   //what happens when no permissions to write to db? what happens when email exists? what happens on network error? retry?
 
-  //todo: restrict db access to authenticated only
+  //todo: what happens when unauthorized? -> logout?
+  //todo: onLogout/inconsistent state -> clear local storage and redirect to login
 
   constructor(
     private apiKeyService: ApiKeyService,
