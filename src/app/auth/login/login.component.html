@@ -30,11 +30,10 @@
                 <app-loading-spinner></app-loading-spinner>
               </div>
               <button
-                *ngIf="!isLoading"
                 class="btn btn-primary btn-lg"
                 style="width: 100%"
                 type="submit"
-                [disabled]="!authForm.valid"
+                [disabled]="!authForm.valid && !isLoading"
               >
                 Login
               </button>
@@ -47,11 +46,11 @@
               ></app-alert>
             </form>
             <div>
-              <p class="mb-0 subtitle-variant " style="padding-top: 16px">
+              <p class="mb-0 subtitle-variant" style="padding-top: 16px">
                 Don't have an account yet?
                 <a
                   [routerLink]="['/auth', 'signup']"
-                  class="fw-bold subtitle-variant "
+                  class="fw-bold subtitle-variant"
                   >Create Account</a
                 >
               </p>
