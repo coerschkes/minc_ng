@@ -1,7 +1,10 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import {
+  HttpClient
+} from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
+import { Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import { ApiErrorHandler } from './api-error-handler';
 import { ApiUrlBuilderService } from './api-url-builde.service';
 import { Account } from './model/account.model';
 import { TokenInfo } from './model/tokeninfo.model';
@@ -28,7 +31,7 @@ export class ApiService {
           return response;
         })
       )
-      .pipe(catchError(this.handleError.bind(this)));
+      .pipe(catchError(ApiErrorHandler.handleError));
   }
 
   get tokenInfo(): Observable<TokenInfo> {
@@ -39,13 +42,6 @@ export class ApiService {
           return response;
         })
       )
-      .pipe(catchError(this.handleError.bind(this)));
-  }
-
-  handleError(errorRes: HttpErrorResponse) {
-    //todo handle error
-    return throwError(
-      () => 'STATUS: ' + errorRes.status + ' MESSAGE: ' + errorRes.error.message
-    );
+      .pipe(catchError(ApiErrorHandler.handleError));
   }
 }

@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { catchError, map, take, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
-import { AuthErrorHandler } from './auth-error-handler.component';
+import { AuthErrorHandler } from './auth-error-handler';
 import { LocalStorageService } from './local-storage.service';
 import { Principal } from './principal.model';
 
