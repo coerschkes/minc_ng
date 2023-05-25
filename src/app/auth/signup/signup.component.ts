@@ -3,8 +3,6 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Account } from 'src/app/shared/application/api/model/account.model';
-import { UserService } from 'src/app/shared/application/user.service';
-import { AuthService } from '../auth.service';
 import { ApiKeyService } from './api-key.service';
 import { SignupService } from './signup.service';
 
@@ -41,9 +39,7 @@ export class SignupComponent implements OnInit, OnDestroy {
 
   constructor(
     private apiKeyService: ApiKeyService,
-    private auth: AuthService,
     private router: Router,
-    private user: UserService,
     private signupService: SignupService
   ) {}
 
