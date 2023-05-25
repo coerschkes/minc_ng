@@ -86,6 +86,10 @@ export class SignupComponent implements OnInit, OnDestroy {
       this.signupService
         .signup(email, password, this.apiKeyService.apiKey)
         .subscribe({
+          error: (error) => {
+            this.signupService.isLoading.next(false);
+            this.signupService.error.next(error);
+          },
           complete: () => {
             this.signupService.isLoading.next(false);
             this.authForm.reset();

@@ -5,10 +5,11 @@
         <div class="card shadow-2-strong scaffold" style="border-radius: 1rem">
           <div class="card-body p-5 text-center">
             <h3 class="mb-5">
-              Sign up {{ accountIsValid() ? "as: " + account.name : "" }}
+              Sign up
+              {{ accountIsValid() && !isLoading ? "as: " + account.name : "" }}
             </h3>
             <form [formGroup]="authForm" (ngSubmit)="onSubmit()">
-              <div class="form-outline mb-4">
+              <div *ngIf="!isLoading" class="form-outline mb-4">
                 <input
                   type="text"
                   class="form-control form-control-lg"
@@ -16,7 +17,7 @@
                   formControlName="apiKey"
                 />
               </div>
-              <div class="form-outline mb-4">
+              <div *ngIf="!isLoading" class="form-outline mb-4">
                 <button
                   class="btn btn-primary btn-lg"
                   style="width: 100%"
@@ -49,7 +50,10 @@
                 </div>
               </div> -->
 
-              <div class="form-outline mb-4" *ngIf="accountIsValid()">
+              <div
+                class="form-outline mb-4"
+                *ngIf="!isLoading && accountIsValid()"
+              >
                 <input
                   type="email"
                   class="form-control form-control-lg"
@@ -58,7 +62,10 @@
                 />
               </div>
 
-              <div class="form-outline mb-4" *ngIf="accountIsValid()">
+              <div
+                class="form-outline mb-4"
+                *ngIf="accountIsValid() && !isLoading"
+              >
                 <input
                   type="password"
                   class="form-control form-control-lg"
@@ -72,7 +79,7 @@
                 style="width: 100%"
                 type="submit"
                 [disabled]="!accountIsValid() || !authForm.valid"
-                *ngIf="accountIsValid()"
+                *ngIf="accountIsValid() && !isLoading"
               >
                 Create Account
               </button>

@@ -64,14 +64,10 @@ export class ApiKeyService {
       if (account.guilds.includes(heimGuildId)) {
         this.user.loadUsernames().subscribe({
           next: (resData) => {
-            if (
-              resData !== null &&
-              resData.length > 0 &&
-              resData.includes(account.name)
-            ) {
-              this.handleErrror('This account is already registered!');
-            } else {
+            if (resData !== null && !resData.includes(account.name)) {
               this.signupService.isLoading.next(false);
+            } else {
+              this.handleErrror('This account is already registered!');
             }
           },
           error: (errorMessage) => {
@@ -87,6 +83,8 @@ export class ApiKeyService {
   }
 
   private handleErrror(error: string) {
+    this.signupService.loadingState.next('');
+    this.signupService.account.next(Account.invalid());
     this.signupService.error.next(error);
     this.signupService.isLoading.next(false);
   }

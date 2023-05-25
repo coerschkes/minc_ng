@@ -1,7 +1,14 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
-import { catchError, exhaustMap, take, tap } from 'rxjs/operators';
+import {
+  catchError,
+  exhaustMap,
+  map,
+  switchMap,
+  take,
+  tap,
+} from 'rxjs/operators';
 import { AuthService } from 'src/app/auth/auth.service';
 import { environment } from 'src/environments/environment';
 import { User } from './model/user.model';
@@ -10,21 +17,40 @@ const dbUrl = environment.firebaseDbUrl;
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
-  userSubject: BehaviorSubject<User> = new BehaviorSubject<User>(User.invalid());
+  userSubject: BehaviorSubject<User> = new BehaviorSubject<User>(
+    User.invalid()
+  );
 
   constructor(private http: HttpClient, private auth: AuthService) {}
 
   //todo: implement delete methods
 
-  saveUsername(username: string): Observable<string> {
-    return this.http
-      .put<string>(dbUrl + 'usernames.json', { username: username })
+  saveUsername(username: string): Observable<string[]> {
+    return this.loadUsernames()
+      .pipe(
+        switchMap((usernames) => {
+          if (usernames !== null && usernames.includes(username)) {
+            return throwError(() => 'Username already exists');
+          } else {
+            if (usernames === null) {
+              usernames = [];
+            }
+            usernames.push(username);
+            return this.http.put<string[]>(dbUrl + 'usernames.json', usernames);
+          }
+        })
+      )
       .pipe(catchError(this.handleError.bind(this)));
   }
 
   loadUsernames(): Observable<string[]> {
     return this.http
       .get<string[]>(dbUrl + 'usernames.json')
+      .pipe(
+        map((usernames) => {
+          return usernames === null ? [] : usernames;
+        })
+      )
       .pipe(catchError(this.handleError.bind(this)));
   }
 
