@@ -12,4 +12,17 @@ export class User {
       return this._roles.slice();
     }
   }
+
+  static invalid(): User {
+    return new User('', '', []);
+  }
+
+  static isInvalid(user: User): boolean {
+    return (
+      user.apiKey === '' ||
+      user.username === '' ||
+      user.roles.length === null ||
+      user.roles.length === 0
+    );
+  }
 }

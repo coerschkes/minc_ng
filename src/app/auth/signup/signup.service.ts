@@ -8,6 +8,7 @@ import {
   mergeMap,
   switchMap,
   take,
+  tap,
   throwError,
 } from 'rxjs';
 import { Account } from 'src/app/shared/application/api/model/account.model';
@@ -40,7 +41,11 @@ export class SignupService {
           .pipe(
             mergeMap(() => {
               return forkJoin({
-                userSave: this.user.saveUser(user),
+                userSave: this.user.saveUser(user).pipe(
+                  tap((user: User) => {
+                    this.user.userSubject.next(user);
+                  })
+                ),
                 username: this.user.saveUsername(account.name),
               });
             })
