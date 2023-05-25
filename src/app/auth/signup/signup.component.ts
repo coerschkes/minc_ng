@@ -27,8 +27,6 @@ export class SignupComponent implements OnInit, OnDestroy {
   apiPermissionsSub: Subscription = new Subscription();
   loadingStateSub: Subscription = new Subscription();
 
-  //todo: global error handler as http interceptor? -> filter request by url and delegate to error handlers(mappers)
-
   //todo: test signup process, especially errors! -> what happens if user not persisting? what happens when wrong url?
   //what happens when no permissions to write to db? what happens when email exists? what happens on network error? retry?
 
