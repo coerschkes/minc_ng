@@ -45,7 +45,6 @@ export class AuthService {
         password: password,
         returnSecureToken: true,
       })
-      .pipe(catchError(AuthErrorHandler.handleError))
       .pipe(tap(this.handleAuthentication.bind(this)));
   }
 
@@ -56,7 +55,6 @@ export class AuthService {
         password: password,
         returnSecureToken: true,
       })
-      .pipe(catchError(AuthErrorHandler.handleError))
       .pipe(tap(this.handleAuthentication.bind(this)));
   }
 

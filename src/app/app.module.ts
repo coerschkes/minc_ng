@@ -6,6 +6,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { NotFoundComponent } from './not-found/not-found.component';
+import { HttpErrorHandlerInterceptor } from './shared/application/http-error-handler-interceptor.service';
 import { LoggingInterceptorService } from './shared/application/logging-interceptor.service';
 
 @NgModule({
@@ -15,6 +16,11 @@ import { LoggingInterceptorService } from './shared/application/logging-intercep
     {
       provide: HTTP_INTERCEPTORS,
       useClass: LoggingInterceptorService,
+      multi: true,
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: HttpErrorHandlerInterceptor,
       multi: true,
     },
   ],

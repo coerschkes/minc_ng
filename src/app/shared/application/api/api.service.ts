@@ -31,7 +31,6 @@ export class ApiService {
           return response;
         })
       )
-      .pipe(catchError(ApiErrorHandler.handleError));
   }
 
   get tokenInfo(): Observable<TokenInfo> {
@@ -42,6 +41,5 @@ export class ApiService {
           return response;
         })
       )
-      .pipe(catchError(ApiErrorHandler.handleError));
   }
 }
