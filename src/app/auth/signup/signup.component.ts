@@ -28,6 +28,17 @@ export class SignupComponent implements OnInit, OnDestroy {
   apiPermissionsSub: Subscription = new Subscription();
   loadingStateSub: Subscription = new Subscription();
 
+  //todo: prevent multi-signup / login after several tries?
+  //todo: form validation
+  //todo: add api key validator
+  //todo: add password validator
+  //todo: add second password field?
+  //todo: show password feature
+  //todo: test signup process, especially errors! -> what happens if user not persisting? what happens when wrong url?
+  //what happens when no permissions to write to db? what happens when email exists? what happens on network error? retry?
+  //todo: good error messages! -> implement error mapper
+  //todo: restrict db access to authenticated only
+
   constructor(
     private apiKeyService: ApiKeyService,
     private auth: AuthService,
@@ -56,12 +67,6 @@ export class SignupComponent implements OnInit, OnDestroy {
         this.loadingState = loadingState;
       }
     );
-    //todo: prevent multi-signup / login after several tries?
-    //todo: form validation
-    //todo: add api key validator
-    //todo: add password validator
-    //todo: add second password field?
-    //todo: show password feature
     this.initForm();
   }
 
