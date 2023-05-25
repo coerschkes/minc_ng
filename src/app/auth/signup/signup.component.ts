@@ -32,6 +32,7 @@ export class SignupComponent implements OnInit, OnDestroy {
 
   //todo: what happens when unauthorized? -> logout?
   //todo: onLogout/inconsistent state -> clear local storage and redirect to login
+  //todo: write readme
 
   constructor(
     private apiKeyService: ApiKeyService,
