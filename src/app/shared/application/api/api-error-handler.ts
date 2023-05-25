@@ -4,6 +4,7 @@ import { throwError } from 'rxjs';
 export class ApiErrorHandler {
   static handleError(errorRes: HttpErrorResponse) {
     switch (errorRes.status) {
+      case 400:
       case 401:
         return throwError(() => 'API-Key is invalid!');
       case 403:
