@@ -1,39 +1,40 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, take } from 'rxjs';
+import { take } from 'rxjs';
 import { ApiService } from 'src/app/shared/application/api/api.service';
 import { Account } from 'src/app/shared/application/api/model/account.model';
 import { UserService } from 'src/app/shared/application/user.service';
 import { environment } from 'src/environments/environment';
+import { SignupService } from './signup.service';
 
 const heimGuildId = environment.heimGuildId;
 
 @Injectable({ providedIn: 'root' })
 export class ApiKeyService {
-  isLoading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  error: BehaviorSubject<string> = new BehaviorSubject<string>('');
-  account: BehaviorSubject<Account> = new BehaviorSubject<Account>(
-    Account.invalid()
-  );
-  apiPermissions: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
-  loadingState: BehaviorSubject<string> = new BehaviorSubject<string>('');
-
-  constructor(private api: ApiService, private user: UserService) {}
+  constructor(
+    private api: ApiService,
+    private user: UserService,
+    private signupService: SignupService
+  ) {}
 
   validateApiKey(apiKey: string) {
     this.api.apiKey = apiKey;
-    this.error.next('');
-    this.isLoading.next(true);
+    this.signupService.error.next('');
+    this.signupService.isLoading.next(true);
     this.loadAccountInfo();
   }
 
+  get apiKey(): string {
+    return this.api.apiKey;
+  }
+
   private loadAccountInfo() {
-    this.loadingState.next('Loading account info...');
+    this.signupService.loadingState.next('Loading account info...');
     this.api.account.subscribe({
       next: (resData: Account) => {
-        this.account.next(resData);
+        this.signupService.account.next(resData);
       },
       error: (errorMessage) => {
-        this.account.next(Account.invalid());
+        this.signupService.account.next(Account.invalid());
         this.handleErrror(errorMessage);
       },
       complete: () => {
@@ -44,10 +45,10 @@ export class ApiKeyService {
   }
 
   private loadTokenInfo() {
-    this.loadingState.next('Loading token info...');
+    this.signupService.loadingState.next('Loading token info...');
     this.api.tokenInfo.subscribe({
       next: (resData) => {
-        this.apiPermissions.next(resData.permissions);
+        this.signupService.apiPermissions.next(resData.permissions);
       },
       error: (errorMessage) => {
         this.handleErrror(errorMessage);
@@ -60,8 +61,8 @@ export class ApiKeyService {
   }
 
   private checkAccount() {
-    this.loadingState.next('Checking account...');
-    this.account.pipe(take(1)).subscribe((account) => {
+    this.signupService.loadingState.next('Checking account...');
+    this.signupService.account.pipe(take(1)).subscribe((account) => {
       console.log(account.guilds);
       if (account.guilds.includes(heimGuildId)) {
         this.user.loadUsernames().subscribe({
@@ -73,7 +74,7 @@ export class ApiKeyService {
             ) {
               this.handleErrror('This account is already registered!');
             } else {
-              this.isLoading.next(false);
+              this.signupService.isLoading.next(false);
             }
           },
           error: (errorMessage) => {
@@ -92,7 +93,7 @@ export class ApiKeyService {
   }
 
   private handleErrror(error: string) {
-    this.error.next(error);
-    this.isLoading.next(false);
+    this.signupService.error.next(error);
+    this.signupService.isLoading.next(false);
   }
 }

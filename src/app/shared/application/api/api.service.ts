@@ -16,6 +16,10 @@ export class ApiService {
     this.url.apiKey = apiKey;
   }
 
+  get apiKey(): string {
+    return this.url.apiKey;
+  }
+
   get account(): Observable<Account> {
     return this.http
       .get<Account>(this.url.account)

@@ -1,8 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Account } from 'src/app/shared/application/api/model/account.model';
+import { UserService } from 'src/app/shared/application/user.service';
+import { AuthService } from '../auth.service';
 import { ApiKeyService } from './api-key.service';
+import { SignupService } from './signup.service';
 
 @Component({
   selector: 'app-signup',
@@ -24,24 +28,30 @@ export class SignupComponent implements OnInit, OnDestroy {
   apiPermissionsSub: Subscription = new Subscription();
   loadingStateSub: Subscription = new Subscription();
 
-  constructor(private apiKeyService: ApiKeyService) {}
+  constructor(
+    private apiKeyService: ApiKeyService,
+    private auth: AuthService,
+    private router: Router,
+    private user: UserService,
+    private signupService: SignupService
+  ) {}
 
   ngOnInit(): void {
-    this.isLoadingSub = this.apiKeyService.isLoading.subscribe((isLoading) => {
+    this.isLoadingSub = this.signupService.isLoading.subscribe((isLoading) => {
       this.isLoading = isLoading;
     });
-    this.errorSub = this.apiKeyService.error.subscribe((error) => {
+    this.errorSub = this.signupService.error.subscribe((error) => {
       this.error = error;
     });
-    this.accountSub = this.apiKeyService.account.subscribe((account) => {
+    this.accountSub = this.signupService.account.subscribe((account) => {
       this.account = account;
     });
-    this.apiPermissionsSub = this.apiKeyService.apiPermissions.subscribe(
+    this.apiPermissionsSub = this.signupService.apiPermissions.subscribe(
       (apiPermissions) => {
         this.apiPermissions = apiPermissions;
       }
     );
-    this.loadingStateSub = this.apiKeyService.loadingState.subscribe(
+    this.loadingStateSub = this.signupService.loadingState.subscribe(
       (loadingState) => {
         this.loadingState = loadingState;
       }
@@ -80,32 +90,25 @@ export class SignupComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
-    //make sure only the validated api key gets persisted!
-    // this.api.getAccount(this.authForm.value.apiKey).subscribe((resData) => {
-    //   this.accountInfo = resData;
-    // });
-    // console.log(this.accountInfo);
-    // if (this.authForm.valid && this.accountInfo.isValid) {
-    // this.isLoading = true;
-    // const email = this.authForm.value.email;
-    // const password = this.authForm.value.password;
-    // const apiKey = this.authForm.value.apiKey;
-    // this.authService.signup(email, password).subscribe({
-    //   next: (resData: any) => {
-    //     this.persistMetadata(apiKey, resData['localId']);
-    //     this.isLoading = false;
-    //   },
-    //   error: (errorMessage) => {
-    //     console.log(errorMessage);
-    //     this.error = errorMessage;
-    //     this.isLoading = false;
-    //   },
-    // });
-    // this.authForm.reset();
-    // this.router.navigate(['/dashboard']);
-    // } else {
-    //   return;
-    // }
+    if (this.authForm.valid && this.accountIsValid()) {
+      const email = this.authForm.value.email;
+      const password = this.authForm.value.password;
+      this.signupService
+        .signup(email, password, this.apiKeyService.apiKey)
+        .subscribe({
+          next: () => {
+            console.log('signup next');
+          },
+          complete: () => {
+            this.signupService.isLoading.next(false);
+            console.log('signup complete');
+            this.authForm.reset();
+            this.router.navigate(['/dashboard']);
+          },
+        });
+    } else {
+      return;
+    }
   }
 
   onHandleError() {

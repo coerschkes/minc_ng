@@ -9,6 +9,9 @@ export class ApiUrlBuilderService {
   set apiKey(apiKey: string) {
     this._apiKey = apiKey;
   }
+  get apiKey(): string {
+    return this._apiKey;
+  }
 
   get account(): string {
     return this.constructUrl('account');

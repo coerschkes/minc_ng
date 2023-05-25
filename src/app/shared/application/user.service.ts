@@ -16,7 +16,7 @@ export class UserService {
 
   saveUsername(username: string): Observable<string> {
     return this.http
-      .put<string>(dbUrl + 'usernames.json', username)
+      .put<string>(dbUrl + 'usernames.json', { username: username })
       .pipe(catchError(this.handleError.bind(this)));
   }
 
