@@ -26,7 +26,7 @@ export class SignupComponent implements OnInit, OnDestroy {
   apiPermissionsSub: Subscription = new Subscription();
   loadingStateSub: Subscription = new Subscription();
 
-  //todo: prevent multi-signup / login after several tries?
+  //todo: prevent check-api-key spamming
   //todo: form validation
   //todo: add api key validator
   //todo: add password validator
@@ -36,6 +36,7 @@ export class SignupComponent implements OnInit, OnDestroy {
   //what happens when no permissions to write to db? what happens when email exists? what happens on network error? retry?
   //todo: good error messages! -> implement error mapper
   //todo: restrict db access to authenticated only
+  //todo: load user in a resolver when entering dashboard -> evaluate if possible
 
   constructor(
     private apiKeyService: ApiKeyService,

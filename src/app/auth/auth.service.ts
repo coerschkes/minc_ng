@@ -26,6 +26,7 @@ export interface AuthResponseData {
 }
 
 //todo: refresh token and change token expiration timer
+//todo: clear user on logout/load user on login
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   principalSubject = new BehaviorSubject<Principal>(Principal.invalid);
