@@ -30,7 +30,6 @@ export class SignupService {
 
   signup(email: string, password: string, apiKey: string): Observable<any> {
     this.isLoading.next(true);
-    console.log(apiKey);
     return this.account.pipe(
       take(1),
       switchMap((account) => {

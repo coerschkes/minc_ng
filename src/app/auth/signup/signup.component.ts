@@ -75,18 +75,6 @@ export class SignupComponent implements OnInit, OnDestroy {
     this.loadingStateSub.unsubscribe();
   }
 
-  initForm() {
-    this.authForm = new FormGroup({
-      apiKey: new FormControl('', [Validators.required]),
-      email: new FormControl('', [Validators.required, Validators.email]),
-      password: new FormControl('', [
-        Validators.required,
-        Validators.minLength(6),
-      ]),
-      status: new FormControl('Member', [Validators.required]),
-    });
-  }
-
   onValidateApiKey() {
     this.apiKeyService.validateApiKey(this.authForm.value.apiKey);
   }
@@ -98,12 +86,8 @@ export class SignupComponent implements OnInit, OnDestroy {
       this.signupService
         .signup(email, password, this.apiKeyService.apiKey)
         .subscribe({
-          next: () => {
-            console.log('signup next');
-          },
           complete: () => {
             this.signupService.isLoading.next(false);
-            console.log('signup complete');
             this.authForm.reset();
             this.router.navigate(['/dashboard']);
           },
@@ -119,5 +103,17 @@ export class SignupComponent implements OnInit, OnDestroy {
 
   accountIsValid(): boolean {
     return Account.isValid(this.account);
+  }
+
+  private initForm() {
+    this.authForm = new FormGroup({
+      apiKey: new FormControl('', [Validators.required]),
+      email: new FormControl('', [Validators.required, Validators.email]),
+      password: new FormControl('', [
+        Validators.required,
+        Validators.minLength(6),
+      ]),
+      status: new FormControl('Member', [Validators.required]),
+    });
   }
 }

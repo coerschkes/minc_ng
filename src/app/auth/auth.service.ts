@@ -72,7 +72,6 @@ export class AuthService {
 
   autoLogin() {
     const loadedUser = this.localStorage.getStoredUser();
-    console.log(loadedUser);
     if (!loadedUser) {
       return;
     }
@@ -95,7 +94,6 @@ export class AuthService {
     return this.principalSubject.pipe(
       take(1),
       map((user) => {
-        console.log(user);
         return user.isValid;
       })
     );

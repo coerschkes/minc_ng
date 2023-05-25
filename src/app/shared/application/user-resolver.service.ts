@@ -8,6 +8,5 @@ export const UserResolver: ResolveFn<User> = () => {
   inject(UserService)
     .loadUserForPrincipal()
     .subscribe((usr) => (user = usr));
-  console.log('resolved user');
   return user;
 };

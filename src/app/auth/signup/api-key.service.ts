@@ -38,7 +38,6 @@ export class ApiKeyService {
         this.handleErrror(errorMessage);
       },
       complete: () => {
-        console.log('Account loaded');
         this.loadTokenInfo();
       },
     });
@@ -54,7 +53,6 @@ export class ApiKeyService {
         this.handleErrror(errorMessage);
       },
       complete: () => {
-        console.log('Token info loaded');
         this.checkAccount();
       },
     });
@@ -63,7 +61,6 @@ export class ApiKeyService {
   private checkAccount() {
     this.signupService.loadingState.next('Checking account...');
     this.signupService.account.pipe(take(1)).subscribe((account) => {
-      console.log(account.guilds);
       if (account.guilds.includes(heimGuildId)) {
         this.user.loadUsernames().subscribe({
           next: (resData) => {
@@ -79,9 +76,6 @@ export class ApiKeyService {
           },
           error: (errorMessage) => {
             this.handleErrror(errorMessage);
-          },
-          complete: () => {
-            console.log('Check account complete');
           },
         });
       } else {
