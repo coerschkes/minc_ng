@@ -66,12 +66,21 @@
                 class="form-outline mb-4"
                 *ngIf="accountIsValid() && !isLoading"
               >
-                <input
-                  type="password"
-                  class="form-control form-control-lg"
-                  formControlName="password"
-                  placeholder="Password"
-                />
+                <div class="input-group mb-3">
+                  <input
+                    type="{{ passwordVisible ? 'text' : 'password' }}"
+                    class="form-control form-control-lg"
+                    formControlName="password"
+                    placeholder="Password"
+                  />
+                  <button
+                    class="btn btn-primary btn-lg"
+                    type="button"
+                    (click)="onTogglePasswordVisibility()"
+                  >
+                    {{ passwordVisible ? "Hide" : "Show" }}
+                  </button>
+                </div>
               </div>
 
               <button

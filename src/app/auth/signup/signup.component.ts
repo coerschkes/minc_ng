@@ -13,6 +13,7 @@ import { SignupService } from './signup.service';
 })
 export class SignupComponent implements OnInit, OnDestroy {
   authForm: FormGroup = new FormGroup({});
+  passwordVisible: boolean = false;
   //mirrored from signup service
   isLoading: boolean = false;
   error: string = '';
@@ -26,17 +27,13 @@ export class SignupComponent implements OnInit, OnDestroy {
   apiPermissionsSub: Subscription = new Subscription();
   loadingStateSub: Subscription = new Subscription();
 
+  //todo: global error handler as http interceptor? -> filter request by url and delegate to error handlers(mappers)
   //todo: prevent check-api-key spamming
-  //todo: form validation
-  //todo: add api key validator
-  //todo: add password validator
-  //todo: add second password field?
-  //todo: show password feature
+
   //todo: test signup process, especially errors! -> what happens if user not persisting? what happens when wrong url?
   //what happens when no permissions to write to db? what happens when email exists? what happens on network error? retry?
-  //todo: good error messages! -> implement error mapper
+
   //todo: restrict db access to authenticated only
-  //todo: load user in a resolver when entering dashboard -> evaluate if possible
 
   constructor(
     private apiKeyService: ApiKeyService,
@@ -109,15 +106,23 @@ export class SignupComponent implements OnInit, OnDestroy {
     return Account.isValid(this.account);
   }
 
+  onTogglePasswordVisibility() {
+    this.passwordVisible = !this.passwordVisible;
+  }
+
   private initForm() {
     this.authForm = new FormGroup({
-      apiKey: new FormControl('', [Validators.required]),
+      apiKey: new FormControl('', [
+        Validators.required,
+        Validators.pattern(
+          '([0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}){2}'
+        ),
+      ]),
       email: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', [
         Validators.required,
         Validators.minLength(6),
       ]),
-      status: new FormControl('Member', [Validators.required]),
     });
   }
 }
