@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { NotificationService } from 'src/app/shared/application/notification.service';
 import { AuthService } from '../auth.service';
 
 @Component({
@@ -10,11 +11,14 @@ import { AuthService } from '../auth.service';
 })
 export class LoginComponent implements OnInit {
   authForm: FormGroup = new FormGroup({});
-  error: string = '';
   isLoading: boolean = false;
 
   //todo: prevent login spamming
-  constructor(private auth: AuthService, private router: Router) {}
+  constructor(
+    private auth: AuthService,
+    private router: Router,
+    private notification: NotificationService
+  ) {}
 
   ngOnInit(): void {
     //todo: improve login "header" with icon
@@ -28,6 +32,7 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit() {
+    if(!this.authForm.valid) return;
     const email = this.authForm.value.email;
     const password = this.authForm.value.password;
     this.isLoading = true;
@@ -35,7 +40,7 @@ export class LoginComponent implements OnInit {
     this.auth.login(email, password).subscribe({
       error: (error) => {
         this.isLoading = false;
-        this.error = error;
+        this.onError(error);
       },
       complete: () => {
         this.isLoading = false;
@@ -45,7 +50,7 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  onHandleError() {
-    this.error = '';
+  onError(error: string) {
+    this.notification.showError(error);
   }
 }
