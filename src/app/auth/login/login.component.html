@@ -1,62 +1,31 @@
-<section class="vh-100 scaffold">
-  <div class="container py-5 h-100 scaffold">
-    <div class="row d-flex justify-content-center align-items-center h-100">
-      <div class="col-12 col-md-8 col-lg-6 col-xl-5">
-        <div class="card shadow-2-strong scaffold" style="border-radius: 1rem">
-          <div class="card-body p-5 text-center">
-            <h3 class="mb-5">Login</h3>
-            <form [formGroup]="authForm" (ngSubmit)="onSubmit()">
-              <div class="form-outline mb-4">
-                <input
-                  type="email"
-                  id="email"
-                  class="form-control form-control-lg"
-                  formControlName="email"
-                  placeholder="Email"
-                />
-              </div>
-
-              <div class="form-outline mb-4">
-                <input
-                  type="password"
-                  id="password"
-                  class="form-control form-control-lg"
-                  formControlName="password"
-                  placeholder="Password"
-                />
-              </div>
-
-              <div *ngIf="isLoading" style="text-align: center">
-                <app-loading-spinner></app-loading-spinner>
-              </div>
-              <button
-                class="btn btn-primary btn-lg"
-                style="width: 100%"
-                type="submit"
-                [disabled]="!authForm.valid && !isLoading"
-              >
-                Login
-              </button>
-              <div *ngIf="error !== ''" class="form-outline mb-4">
-                <app-alert
-                  [message]="error"
-                  (close)="onHandleError()"
-                ></app-alert>
-              </div>
-            </form>
-            <div>
-              <p class="mb-0 subtitle-variant" style="padding-top: 16px">
-                Don't have an account yet?
-                <a
-                  [routerLink]="['/auth', 'signup']"
-                  class="fw-bold subtitle-variant"
-                  >Create Account</a
-                >
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+<div class="example-card">
+  <mat-card>
+    <form [formGroup]="authForm" (ngSubmit)="onSubmit()">
+      <mat-card-header>
+        <mat-card-title>Login</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-error *ngIf="error !== ''">
+          The username and password were not recognised
+        </mat-error>
+        <mat-form-field MatFormFieldControl>
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" />
+          <mat-error> Email is <strong>required</strong> </mat-error>
+        </mat-form-field>
+        <mat-form-field class="full-width-input">
+          <mat-label>Password</mat-label>
+          <input matInput type="password" formControlName="password" />
+          <mat-error> Please provide a valid password </mat-error>
+        </mat-form-field>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button color="primary">Create Account</button>
+        <button mat-raised-button color="primary">Login</button>
+      </mat-card-actions>
+      <mat-card-footer>
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      </mat-card-footer>
+    </form>
+  </mat-card>
+</div>
