@@ -9,10 +9,11 @@ import { DashboardModule } from './dashboard/dashboard.module';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { HttpErrorHandlerInterceptor } from './shared/application/http-error-handler-interceptor.service';
 import { LoggingInterceptorService } from './shared/application/logging-interceptor.service';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [AppComponent, NotFoundComponent],
-  imports: [BrowserModule, AppRoutingModule, DashboardModule, HttpClientModule],
+  imports: [BrowserModule, AppRoutingModule, DashboardModule, HttpClientModule, BrowserAnimationsModule],
   providers: [
     {
       provide: HTTP_INTERCEPTORS,
