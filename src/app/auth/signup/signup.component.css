@@ -1,0 +1,28 @@
+mat-card-header{
+  display: block;
+  margin-bottom: 16px;
+}
+mat-card-title{
+  font-size: xx-large;
+}
+mat-card {
+  max-width: 400px;
+  margin: 2em auto;
+  text-align: center;
+}
+mat-form-field {
+  display: block;
+}
+
+mat-card-actions{
+  display: flex;
+  justify-content: space-between;
+  padding: 0 16px;
+}
+
+.example-section {
+  display: flex;
+  align-content: center;
+  align-items: center;
+  /* height: 60px; */
+}

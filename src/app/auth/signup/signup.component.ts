@@ -1,10 +1,18 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  AsyncValidatorFn,
+  FormControl,
+  FormGroup,
+  Validators
+} from '@angular/forms';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription, catchError, map, of } from 'rxjs';
 import { Account } from 'src/app/shared/application/api/model/account.model';
 import { ApiKeyService } from './api-key.service';
 import { SignupService } from './signup.service';
+
+//todo: show somehow that api key is valid -> checkmark?
 
 @Component({
   selector: 'app-signup',
@@ -14,18 +22,15 @@ import { SignupService } from './signup.service';
 export class SignupComponent implements OnInit, OnDestroy {
   authForm: FormGroup = new FormGroup({});
   passwordVisible: boolean = false;
-  //mirrored from signup service
   isLoading: boolean = false;
   error: string = '';
   account: Account = Account.invalid();
-  apiPermissions: string[] = [];
-  loadingState: string = '';
+  apiKeyError: string = '';
+
   //subscriptions to signup service
-  isLoadingSub: Subscription = new Subscription();
-  errorSub: Subscription = new Subscription();
+  isSignupLoadingSub: Subscription = new Subscription();
+  isApiKeyLoadingSub: Subscription = new Subscription();
   accountSub: Subscription = new Subscription();
-  apiPermissionsSub: Subscription = new Subscription();
-  loadingStateSub: Subscription = new Subscription();
 
   //todo: test signup process, especially errors! -> what happens if user not persisting? what happens when wrong url?
   //what happens when no permissions to write to db? what happens when email exists? what happens on network error? retry?
@@ -41,38 +46,27 @@ export class SignupComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.isLoadingSub = this.signupService.isLoading.subscribe((isLoading) => {
-      this.isLoading = isLoading;
-    });
-    this.errorSub = this.signupService.error.subscribe((error) => {
-      this.error = error;
-    });
-    this.accountSub = this.signupService.account.subscribe((account) => {
-      this.account = account;
-    });
-    this.apiPermissionsSub = this.signupService.apiPermissions.subscribe(
-      (apiPermissions) => {
-        this.apiPermissions = apiPermissions;
+    this.isSignupLoadingSub = this.signupService.isLoading.subscribe(
+      (isLoading) => {
+        this.isLoading = isLoading;
       }
     );
-    this.loadingStateSub = this.signupService.loadingState.subscribe(
-      (loadingState) => {
-        this.loadingState = loadingState;
+    this.accountSub = this.signupService.account.subscribe((account) => {
+      console.log(account);
+      this.account = account;
+    });
+    this.isApiKeyLoadingSub = this.apiKeyService.isLoading.subscribe(
+      (isLoading) => {
+        this.isLoading = isLoading;
       }
     );
     this.initForm();
   }
 
   ngOnDestroy(): void {
-    this.isLoadingSub.unsubscribe();
-    this.errorSub.unsubscribe();
+    this.isSignupLoadingSub.unsubscribe();
     this.accountSub.unsubscribe();
-    this.apiPermissionsSub.unsubscribe();
-    this.loadingStateSub.unsubscribe();
-  }
-
-  onValidateApiKey() {
-    this.apiKeyService.validateApiKey(this.authForm.value.apiKey);
+    this.isApiKeyLoadingSub.unsubscribe();
   }
 
   onSubmit() {
@@ -84,7 +78,7 @@ export class SignupComponent implements OnInit, OnDestroy {
         .subscribe({
           error: (error) => {
             this.signupService.isLoading.next(false);
-            this.signupService.error.next(error);
+            this.error = error;
           },
           complete: () => {
             this.signupService.isLoading.next(false);
@@ -97,10 +91,6 @@ export class SignupComponent implements OnInit, OnDestroy {
     }
   }
 
-  onHandleError() {
-    this.error = '';
-  }
-
   accountIsValid(): boolean {
     return Account.isValid(this.account);
   }
@@ -109,14 +99,40 @@ export class SignupComponent implements OnInit, OnDestroy {
     this.passwordVisible = !this.passwordVisible;
   }
 
+  apiKeyValidator(): AsyncValidatorFn {
+    return (control: AbstractControl): Observable<any> => {
+      const apiKey = control.value;
+      if (apiKey !== null && apiKey !== undefined && apiKey !== '') {
+        return this.apiKeyService.validateApiKey(apiKey).pipe(
+          map(() => {
+            this.apiKeyError = '';
+            return null;
+          }),
+          catchError((error) => {
+            this.apiKeyError =
+              error.message === undefined ? error : error.message;
+            this.signupService.account.next(Account.invalid());
+            return of({ apiKeyError: { value: control.value } });
+          })
+        );
+      } else {
+        return of({ apiKeyError: { value: control.value } });
+      }
+    };
+  }
+
   private initForm() {
     this.authForm = new FormGroup({
-      apiKey: new FormControl('', [
-        Validators.required,
-        Validators.pattern(
-          '([0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}){2}'
-        ),
-      ]),
+      apiKey: new FormControl(
+        '',
+        [
+          Validators.required,
+          Validators.pattern(
+            '([0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}){2}'
+          ),
+        ],
+        this.apiKeyValidator().bind(this)
+      ),
       email: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', [
         Validators.required,

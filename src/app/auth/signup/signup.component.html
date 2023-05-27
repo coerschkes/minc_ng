@@ -1,123 +1,54 @@
-<section class="vh-100">
-  <div class="container py-5 h-100">
-    <div class="row d-flex justify-content-center align-items-center h-100">
-      <div class="col-12 col-md-8 col-lg-6 col-xl-5">
-        <div class="card shadow-2-strong scaffold" style="border-radius: 1rem">
-          <div class="card-body p-5 text-center">
-            <h3 class="mb-5">
-              Sign up
-              {{ accountIsValid() && !isLoading ? "as: " + account.name : "" }}
-            </h3>
-            <form [formGroup]="authForm" (ngSubmit)="onSubmit()">
-              <div *ngIf="!isLoading" class="form-outline mb-4">
-                <input
-                  type="text"
-                  class="form-control form-control-lg"
-                  placeholder="API Key"
-                  formControlName="apiKey"
-                />
-              </div>
-              <div *ngIf="!isLoading" class="form-outline mb-4">
-                <button
-                  class="btn btn-primary btn-lg"
-                  style="width: 100%"
-                  type="button"
-                  [disabled]="!authForm.get('apiKey')?.valid"
-                  (click)="onValidateApiKey()"
-                >
-                  {{ isLoading ? loadingState : "Check API Key" }}
-                </button>
-              </div>
-
-              <!-- <div class="form-outline mb-4">
-                <div class="btn-group" style="width: 100%">
-                  <div class="col" *ngFor="let status of memberStatus">
-                    <input
-                      type="radio"
-                      class="btn-check"
-                      name="status"
-                      id="{{ status }}"
-                      [value]="status"
-                      formControlName="status"
-                      required
-                    />
-                    <label
-                      class="btn btn-secondary btn-lg d-grid"
-                      for="{{ status }}"
-                      >{{ status }}</label
-                    >
-                  </div>
-                </div>
-              </div> -->
-
-              <div
-                class="form-outline mb-4"
-                *ngIf="!isLoading && accountIsValid()"
-              >
-                <input
-                  type="email"
-                  class="form-control form-control-lg"
-                  formControlName="email"
-                  placeholder="Email"
-                />
-              </div>
-
-              <div
-                class="form-outline mb-4"
-                *ngIf="accountIsValid() && !isLoading"
-              >
-                <div class="input-group mb-3">
-                  <input
-                    type="{{ passwordVisible ? 'text' : 'password' }}"
-                    class="form-control form-control-lg"
-                    formControlName="password"
-                    placeholder="Password"
-                  />
-                  <button
-                    class="btn btn-primary btn-lg"
-                    type="button"
-                    (click)="onTogglePasswordVisibility()"
-                  >
-                    {{ passwordVisible ? "Hide" : "Show" }}
-                  </button>
-                </div>
-              </div>
-
-              <button
-                class="btn btn-primary btn-lg"
-                style="width: 100%"
-                type="submit"
-                [disabled]="!accountIsValid() || !authForm.valid"
-                *ngIf="accountIsValid() && !isLoading"
-              >
-                Create Account
-              </button>
-              <div *ngIf="error !== ''" class="form-outline mb-4">
-                <app-alert
-                  [message]="error"
-                  (close)="onHandleError()"
-                ></app-alert>
-              </div>
-            </form>
-            <div
-              *ngIf="isLoading && accountIsValid()"
-              style="text-align: center"
-            >
-              <app-loading-spinner></app-loading-spinner>
-            </div>
-            <div>
-              <p class="mb-0 subtitle-variant" style="padding-top: 16px">
-                Already have an account?
-                <a
-                  [routerLink]="['/auth', 'login']"
-                  class="fw-bold subtitle-variant"
-                  >Login</a
-                >
-              </p>
-            </div>
-          </div>
-        </div>
+<mat-card>
+  <form [formGroup]="authForm" (ngSubmit)="onSubmit()">
+    <mat-card-header>
+      <mat-card-title>Sign up</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <mat-form-field class="full-width-input">
+        <mat-label>API-Key</mat-label>
+        <input matInput type="text" formControlName="apiKey" />
+        <mat-icon *ngIf="accountIsValid()" matSuffix color="primary"
+          >accessible_forward</mat-icon
+        >
+        <mat-error>
+          {{
+            apiKeyError === "" ? "API-Key is invalid" : apiKeyError
+          }}</mat-error
+        >
+      </mat-form-field>
+      <mat-form-field class="full-width-input">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" />
+        <mat-error> Email is <strong>required</strong> </mat-error>
+      </mat-form-field>
+      <mat-form-field class="full-width-input">
+        <mat-label>Password</mat-label>
+        <input
+          matInput
+          type="{{ passwordVisible ? 'text' : 'password' }}"
+          formControlName="password"
+        />
+        <mat-error>
+          Password is <strong>required</strong> (min len 6)</mat-error
+        >
+      </mat-form-field>
+      <mat-error *ngIf="error !== ''">{{ error }}</mat-error>
+      <div class="example-section">
+        <mat-checkbox
+          class="example-margin"
+          (change)="onTogglePasswordVisibility()"
+          >Show Password</mat-checkbox
+        >
       </div>
-    </div>
-  </div>
-</section>
+    </mat-card-content>
+    <mat-card-actions>
+      <a [routerLink]="['/auth', 'login']" mat-button color="primary">Login</a>
+      <button type="submit" mat-raised-button color="primary" [disabled]="!accountIsValid() || !authForm.valid">
+        Create Account
+      </button>
+    </mat-card-actions>
+    <mat-card-footer *ngIf="isLoading">
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    </mat-card-footer>
+  </form>
+</mat-card>

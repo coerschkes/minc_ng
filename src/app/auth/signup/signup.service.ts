@@ -16,12 +16,9 @@ import { AuthService } from '../auth.service';
 @Injectable({ providedIn: 'root' })
 export class SignupService {
   isLoading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  error: BehaviorSubject<string> = new BehaviorSubject<string>('');
   account: BehaviorSubject<Account> = new BehaviorSubject<Account>(
     Account.invalid()
   );
-  apiPermissions: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
-  loadingState: BehaviorSubject<string> = new BehaviorSubject<string>('');
 
   constructor(private auth: AuthService, private user: UserService) {}
 
