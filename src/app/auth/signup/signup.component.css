@@ -19,10 +19,3 @@ mat-card-actions{
   justify-content: space-between;
   padding: 0 16px;
 }
-
-.example-section {
-  display: flex;
-  align-content: center;
-  align-items: center;
-  /* height: 60px; */
-}
