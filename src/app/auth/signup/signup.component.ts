@@ -99,7 +99,7 @@ export class SignupComponent implements OnInit, OnDestroy {
     this.passwordVisible = !this.passwordVisible;
   }
 
-  apiKeyValidator(): AsyncValidatorFn {
+  private apiKeyValidator(): AsyncValidatorFn {
     return (control: AbstractControl): Observable<any> => {
       const apiKey = control.value;
       if (apiKey !== null && apiKey !== undefined && apiKey !== '') {
