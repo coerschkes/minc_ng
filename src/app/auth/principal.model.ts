@@ -8,9 +8,6 @@ export class Principal {
   ) {}
 
   get token() {
-    if (!this._tokenExpirationDate || new Date() > this._tokenExpirationDate) {
-      return '';
-    }
     return this._token;
   }
 
@@ -22,12 +19,12 @@ export class Principal {
     return this._refreshToken;
   }
 
-  get isValid() {
+  static isValid(principal: Principal): boolean {
     return (
-      this.email != '' &&
-      this.id != '' &&
-      this.token != '' &&
-      this._tokenExpirationDate != null
+      principal.email != '' &&
+      principal.id != '' &&
+      principal.token != '' &&
+      principal._tokenExpirationDate != null
     );
   }
 

@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, OnDestroy, OnInit } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { map, take, tap } from 'rxjs/operators';
@@ -38,9 +38,10 @@ export interface RefreshResponseData {
 }
 
 //todo: Test! Does refresh token work?
+//todo: Bug: when reloading page, principal is deleted from local storage
 
 @Injectable({ providedIn: 'root' })
-export class AuthService implements OnInit, OnDestroy {
+export class AuthService implements OnDestroy {
   principalSubject = new BehaviorSubject<Principal>(Principal.invalid);
   principalSubjectSub = new Subscription();
   tokenExpirationTimer: any;
@@ -50,35 +51,18 @@ export class AuthService implements OnInit, OnDestroy {
     private http: HttpClient,
     private router: Router,
     private localStorage: LocalStorageService
-  ) {}
-
-  ngOnInit(): void {
-    console.log('auth service init');
+  ) {
+    this.principalSubjectSub = this.principalSubject.subscribe((principal) => {
+      if (Principal.isValid(principal)) {
+        this.localStorage.storePrincipal(principal);
+        this.autoLogout(principal.tokenExpirationDate);
+        this.autoRefresh(principal);
+      }
+    });
   }
 
   ngOnDestroy(): void {
     this.principalSubjectSub.unsubscribe();
-  }
-
-  registerPrincipalChange() {
-    this.principalSubjectSub.unsubscribe();
-    this.principalSubjectSub = this.principalSubject.subscribe((principal) => {
-      if (principal.isValid) {
-        this.localStorage.storePrincipal(principal);
-        this.autoLogout(principal.tokenExpirationDate);
-        this.autoRefresh(principal);
-      } else {
-        this.router.navigate(['/auth']);
-        this.localStorage.removeStoredPrincipal();
-        if (this.tokenExpirationTimer) {
-          clearTimeout(this.tokenExpirationTimer);
-        }
-        if (this.tokenRefreshTimer) {
-          clearTimeout(this.tokenRefreshTimer);
-        }
-        this.tokenExpirationTimer = null;
-      }
-    });
   }
 
   signup(email: string, password: string) {
@@ -103,7 +87,16 @@ export class AuthService implements OnInit, OnDestroy {
 
   logout() {
     this.principalSubject.next(Principal.invalid);
-    this.principalSubjectSub.unsubscribe();
+    this.localStorage.removeStoredPrincipal();
+    if (this.tokenExpirationTimer) {
+      clearTimeout(this.tokenExpirationTimer);
+    }
+    if (this.tokenRefreshTimer) {
+      clearTimeout(this.tokenRefreshTimer);
+    }
+    this.tokenExpirationTimer = null;
+    this.tokenRefreshTimer = null;
+    this.router.navigate(['/auth']);
   }
 
   refresh(principal: Principal) {
@@ -131,10 +124,7 @@ export class AuthService implements OnInit, OnDestroy {
     if (this.tokenRefreshTimer) {
       clearTimeout(this.tokenRefreshTimer);
     }
-    const refreshDuration =
-      new Date(principal.tokenExpirationDate).getTime() -
-      60 -
-      new Date().getTime();
+    const refreshDuration = 600000; //refresh every 10 min
     this.tokenRefreshTimer = setTimeout(() => {
       this.refresh(principal);
     }, refreshDuration);
@@ -142,12 +132,13 @@ export class AuthService implements OnInit, OnDestroy {
 
   autoLogin() {
     const loadedUser = this.localStorage.getStoredPrincipal();
+
+    //todo: check if stored principal has acutal valid non expired token
     if (!loadedUser) {
       return;
     }
     if (loadedUser.token && loadedUser.tokenExpirationDate > new Date()) {
       this.principalSubject.next(loadedUser);
-      this.registerPrincipalChange();
     } else {
       this.localStorage.removeStoredPrincipal();
     }
@@ -167,8 +158,8 @@ export class AuthService implements OnInit, OnDestroy {
   isLoggedIn() {
     return this.principalSubject.pipe(
       take(1),
-      map((user) => {
-        return user.isValid;
+      map((principal) => {
+        return Principal.isValid(principal);
       })
     );
   }
@@ -181,7 +172,6 @@ export class AuthService implements OnInit, OnDestroy {
       authResponseData.idToken,
       this.getExpirationDate(authResponseData.expiresIn)
     );
-    this.registerPrincipalChange();
     this.principalSubject.next(user);
   }
 

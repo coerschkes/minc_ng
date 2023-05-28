@@ -43,7 +43,6 @@ export class SignupComponent implements OnInit, OnDestroy {
       }
     );
     this.accountSub = this.signupService.account.subscribe((account) => {
-      console.log(account);
       this.account = account;
     });
     this.isApiKeyLoadingSub = this.apiKeyService.isLoading.subscribe(

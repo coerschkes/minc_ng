@@ -3,9 +3,8 @@ import {
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
-import { ApiErrorHandler } from './api-error-handler';
-import { ApiUrlBuilderService } from './api-url-builde.service';
+import { map } from 'rxjs/operators';
+import { ApiUrlBuilderService } from './api-url-builder.service';
 import { Account } from './model/account.model';
 import { TokenInfo } from './model/tokeninfo.model';
 
