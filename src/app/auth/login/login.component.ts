@@ -10,6 +10,7 @@ import { AuthService } from '../auth.service';
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent implements OnInit {
+  passwordVisible: boolean = false;
   authForm: FormGroup = new FormGroup({});
   isLoading: boolean = false;
 
@@ -48,6 +49,10 @@ export class LoginComponent implements OnInit {
         this.router.navigate(['/dashboard']);
       },
     });
+  }
+
+  onTogglePasswordVisibility() {
+    this.passwordVisible = !this.passwordVisible;
   }
 
   onError(error: string) {

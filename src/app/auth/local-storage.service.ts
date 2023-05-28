@@ -1,39 +1,40 @@
 import { Injectable } from '@angular/core';
 import { Principal } from './principal.model';
 
-interface UserData {
-  email: string;
-  id: string;
-  _token: string;
-  _tokenExpirationDate: string;
-}
-
 @Injectable({ providedIn: 'root' })
 export class LocalStorageService {
-  getStoredUser(): Principal | null {
-    const userData = this.loadUserData();
-    if (!userData) {
+  storePrincipal(principal: Principal) {
+    localStorage.setItem('principal', JSON.stringify(principal));
+  }
+  removeStoredPrincipal() {
+    localStorage.removeItem('principal');
+  }
+
+  getStoredPrincipal(): Principal | null {
+    const principal = this.loadPrincipal();
+    if (!principal) {
       return null;
     } else {
       return new Principal(
-        userData.email,
-        userData.id,
-        userData._token,
-        new Date(userData._tokenExpirationDate)
+        principal.email,
+        principal.id,
+        principal.refreshToken,
+        principal.token,
+        new Date(principal.tokenExpirationDate)
       );
     }
   }
 
-  private loadUserData(): UserData | null {
-    const loadedUserData = localStorage.getItem('principal');
-    if (!loadedUserData) {
+  private loadPrincipal(): Principal | null {
+    const loadedPrincipal = localStorage.getItem('principal');
+    if (!loadedPrincipal) {
       return null;
     } else {
-      return this.parseUserData(loadedUserData);
+      return this.parsePrincipal(loadedPrincipal);
     }
   }
 
-  private parseUserData(userData: string): UserData {
-    return JSON.parse(userData);
+  private parsePrincipal(principal: string): Principal {
+    return JSON.parse(principal);
   }
 }

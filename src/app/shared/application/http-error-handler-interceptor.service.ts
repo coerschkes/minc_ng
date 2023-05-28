@@ -22,7 +22,8 @@ export class HttpErrorHandlerInterceptor implements HttpInterceptor {
     if (req.url.startsWith('https://api.guildwars2.com/v2/')) {
       return next.handle(req).pipe(catchError(ApiErrorHandler.handleError));
     } else if (
-      req.url.startsWith('https://identitytoolkit.googleapis.com/v1/')
+      req.url.startsWith('https://identitytoolkit.googleapis.com/v1/') ||
+      req.url.startsWith('https://securetoken.googleapis.com/v1')
     ) {
       return next.handle(req).pipe(catchError(AuthErrorHandler.handleError));
     } else if (req.url.startsWith(dbUrl)) {

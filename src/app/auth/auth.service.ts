@@ -1,10 +1,9 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject } from 'rxjs';
-import { catchError, map, take, tap } from 'rxjs/operators';
+import { BehaviorSubject, Subscription } from 'rxjs';
+import { map, take, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
-import { AuthErrorHandler } from './auth-error-handler';
 import { LocalStorageService } from './local-storage.service';
 import { Principal } from './principal.model';
 
@@ -13,6 +12,10 @@ const firebaseSignupUrl =
   environment.firebaseApiKey;
 const firebaseLoginUrl =
   'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=' +
+  environment.firebaseApiKey;
+
+const firebaseRefreshUrl =
+  'https://securetoken.googleapis.com/v1/token?key=' +
   environment.firebaseApiKey;
 
 export interface AuthResponseData {
@@ -25,18 +28,58 @@ export interface AuthResponseData {
   registered?: boolean;
 }
 
-//todo: refresh token and change token expiration timer
-//todo: clear user on logout/load user on login
+export interface RefreshResponseData {
+  expires_in: string;
+  token_type: string;
+  refresh_token: string;
+  id_token: string;
+  user_id: string;
+  project_id: string;
+}
+
+//todo: Test! Does refresh token work?
+
 @Injectable({ providedIn: 'root' })
-export class AuthService {
+export class AuthService implements OnInit, OnDestroy {
   principalSubject = new BehaviorSubject<Principal>(Principal.invalid);
+  principalSubjectSub = new Subscription();
   tokenExpirationTimer: any;
+  tokenRefreshTimer: any;
 
   constructor(
     private http: HttpClient,
     private router: Router,
     private localStorage: LocalStorageService
   ) {}
+
+  ngOnInit(): void {
+    console.log('auth service init');
+  }
+
+  ngOnDestroy(): void {
+    this.principalSubjectSub.unsubscribe();
+  }
+
+  registerPrincipalChange() {
+    this.principalSubjectSub.unsubscribe();
+    this.principalSubjectSub = this.principalSubject.subscribe((principal) => {
+      if (principal.isValid) {
+        this.localStorage.storePrincipal(principal);
+        this.autoLogout(principal.tokenExpirationDate);
+        this.autoRefresh(principal);
+      } else {
+        this.router.navigate(['/auth']);
+        this.localStorage.removeStoredPrincipal();
+        if (this.tokenExpirationTimer) {
+          clearTimeout(this.tokenExpirationTimer);
+        }
+        if (this.tokenRefreshTimer) {
+          clearTimeout(this.tokenRefreshTimer);
+        }
+        this.tokenExpirationTimer = null;
+      }
+    });
+  }
 
   signup(email: string, password: string) {
     return this.http
@@ -60,29 +103,62 @@ export class AuthService {
 
   logout() {
     this.principalSubject.next(Principal.invalid);
-    this.router.navigate(['/auth']);
-    localStorage.removeItem('principal');
-    if (this.tokenExpirationTimer) {
-      clearTimeout(this.tokenExpirationTimer);
+    this.principalSubjectSub.unsubscribe();
+  }
+
+  refresh(principal: Principal) {
+    this.http
+      .post<RefreshResponseData>(firebaseRefreshUrl, {
+        grant_type: 'refresh_token',
+        refresh_token: principal.refreshToken,
+      })
+      .pipe(
+        map((resData) => {
+          const updatedPrincipal = new Principal(
+            principal.email,
+            principal.id,
+            resData.refresh_token,
+            resData.id_token,
+            this.getExpirationDate(resData.expires_in)
+          );
+          this.principalSubject.next(updatedPrincipal);
+        })
+      )
+      .subscribe();
+  }
+
+  autoRefresh(principal: Principal) {
+    if (this.tokenRefreshTimer) {
+      clearTimeout(this.tokenRefreshTimer);
     }
-    this.tokenExpirationTimer = null;
+    const refreshDuration =
+      new Date(principal.tokenExpirationDate).getTime() -
+      60 -
+      new Date().getTime();
+    this.tokenRefreshTimer = setTimeout(() => {
+      this.refresh(principal);
+    }, refreshDuration);
   }
 
   autoLogin() {
-    const loadedUser = this.localStorage.getStoredUser();
+    const loadedUser = this.localStorage.getStoredPrincipal();
     if (!loadedUser) {
       return;
     }
-    if (loadedUser.token) {
+    if (loadedUser.token && loadedUser.tokenExpirationDate > new Date()) {
       this.principalSubject.next(loadedUser);
-      const expirationDuration =
-        new Date(loadedUser.tokenExpirationDate).getTime() -
-        new Date().getTime();
-      this.autoLogout(expirationDuration);
+      this.registerPrincipalChange();
+    } else {
+      this.localStorage.removeStoredPrincipal();
     }
   }
 
-  autoLogout(expirationDuration: number) {
+  autoLogout(tokenExpirationDate: Date) {
+    if (this.tokenExpirationTimer) {
+      clearTimeout(this.tokenExpirationTimer);
+    }
+    const expirationDuration =
+      new Date(tokenExpirationDate).getTime() - new Date().getTime();
     this.tokenExpirationTimer = setTimeout(() => {
       this.logout();
     }, expirationDuration);
@@ -98,16 +174,18 @@ export class AuthService {
   }
 
   private handleAuthentication(authResponseData: AuthResponseData) {
-    const expirationDate = new Date(
-      new Date().getTime() + +authResponseData.expiresIn * 1000
-    );
     const user = new Principal(
       authResponseData.email,
       authResponseData.localId,
+      authResponseData.refreshToken,
       authResponseData.idToken,
-      expirationDate
+      this.getExpirationDate(authResponseData.expiresIn)
     );
+    this.registerPrincipalChange();
     this.principalSubject.next(user);
-    localStorage.setItem('principal', JSON.stringify(user));
+  }
+
+  private getExpirationDate(expiresIn: string) {
+    return new Date(new Date().getTime() + +expiresIn * 1000);
   }
 }

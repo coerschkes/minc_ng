@@ -12,8 +12,6 @@ import { Account } from 'src/app/shared/application/api/model/account.model';
 import { ApiKeyService } from './api-key.service';
 import { SignupService } from './signup.service';
 
-//todo: show somehow that api key is valid -> checkmark?
-
 @Component({
   selector: 'app-signup',
   templateUrl: './signup.component.html',
@@ -31,13 +29,6 @@ export class SignupComponent implements OnInit, OnDestroy {
   isSignupLoadingSub: Subscription = new Subscription();
   isApiKeyLoadingSub: Subscription = new Subscription();
   accountSub: Subscription = new Subscription();
-
-  //todo: test signup process, especially errors! -> what happens if user not persisting? what happens when wrong url?
-  //what happens when no permissions to write to db? what happens when email exists? what happens on network error? retry?
-
-  //todo: what happens when unauthorized? -> logout?
-  //todo: onLogout/inconsistent state -> clear local storage and redirect to login
-  //todo: write readme
 
   constructor(
     private apiKeyService: ApiKeyService,
