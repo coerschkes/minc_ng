@@ -6,6 +6,7 @@ import { map, take, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { LocalStorageService } from './local-storage.service';
 import { Principal } from './principal.model';
+import { NotificationService } from '../shared/application/notification.service';
 
 const firebaseSignupUrl =
   'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=' +
@@ -37,9 +38,6 @@ export interface RefreshResponseData {
   project_id: string;
 }
 
-//todo: Test! Does refresh token work?
-//todo: Bug: when reloading page, principal is deleted from local storage
-
 @Injectable({ providedIn: 'root' })
 export class AuthService implements OnDestroy {
   principalSubject = new BehaviorSubject<Principal>(Principal.invalid);
@@ -50,7 +48,8 @@ export class AuthService implements OnDestroy {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private localStorage: LocalStorageService
+    private localStorage: LocalStorageService,
+    private notificationService: NotificationService
   ) {
     this.principalSubjectSub = this.principalSubject.subscribe((principal) => {
       if (Principal.isValid(principal)) {
@@ -117,7 +116,14 @@ export class AuthService implements OnDestroy {
           this.principalSubject.next(updatedPrincipal);
         })
       )
-      .subscribe();
+      .subscribe({
+        error: () => {
+          this.logout();
+          this.notificationService.showError(
+            'Session expired. Please login again.'
+          );
+        },
+      });
   }
 
   autoRefresh(principal: Principal) {
@@ -132,12 +138,11 @@ export class AuthService implements OnDestroy {
 
   autoLogin() {
     const loadedUser = this.localStorage.getStoredPrincipal();
-
-    //todo: check if stored principal has acutal valid non expired token
     if (!loadedUser) {
       return;
     }
     if (loadedUser.token && loadedUser.tokenExpirationDate > new Date()) {
+      this.refresh(loadedUser);
       this.principalSubject.next(loadedUser);
     } else {
       this.localStorage.removeStoredPrincipal();
