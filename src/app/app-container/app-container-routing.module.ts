@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 import { LoginGuard } from '../auth/login.guard';
 import { UserResolver } from '../shared/application/user-resolver.service';
 import { DashboardComponent } from './dashboard/dashboard.component';
