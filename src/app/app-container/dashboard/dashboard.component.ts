@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { User } from '../shared/application/model/user.model';
-import { UserService } from '../shared/application/user.service';
+import { User } from 'src/app/shared/application/model/user.model';
+import { UserService } from 'src/app/shared/application/user.service';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css'],
+  styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent implements OnInit {
   currentUser: User = User.invalid();
