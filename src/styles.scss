@@ -16,11 +16,14 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 html, body{
   margin: 0;
-  height: 100%;
+  overflow-y: hidden;
+  height: 100vh;
 }
 
 .full-height {
-  height:100%;
+  margin: 0;
+  height:100vh;
   display: block;
+  overflow-y: hidden;
 }
 
