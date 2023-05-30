@@ -10,12 +10,14 @@ import { AppContainerRoutingModule } from './app-container-routing.module';
 import { AppContainerComponent } from './app-container.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { SidenavComponent } from './sidenav/sidenav.component';
+import { PlannerComponent } from './planner/planner.component';
 
 @NgModule({
   declarations: [
     AppContainerComponent,
     DashboardComponent,
     SidenavComponent,
+    PlannerComponent,
   ],
   imports: [
     CommonModule,
