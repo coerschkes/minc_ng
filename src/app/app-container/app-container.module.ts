@@ -11,6 +11,8 @@ import { AppContainerComponent } from './app-container.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { SidenavComponent } from './sidenav/sidenav.component';
 import { PlannerComponent } from './planner/planner.component';
+import { MatMenuModule } from '@angular/material/menu';
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [
@@ -28,6 +30,8 @@ import { PlannerComponent } from './planner/planner.component';
     MatToolbarModule,
     MatIconModule,
     MatButtonModule,
+    MatMenuModule,
+    MatTooltipModule,
   ],
 })
 export class AppContainerModule {}
