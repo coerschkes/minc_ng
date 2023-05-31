@@ -4,9 +4,10 @@
   </button>
   <h1 class="app-name">MiNc</h1>
   <div style="margin-right: 0; margin-left: auto">
-    <button mat-icon-button type="button" matTooltip="Settings">
+    <a [routerLink]="['settings']" mat-icon-button matTooltip="Settings"><mat-icon>settings</mat-icon></a>
+    <!-- <button mat-icon-button type="button" matTooltip="Settings">
       <mat-icon>settings</mat-icon>
-    </button>
+    </button> -->
     <button
       mat-icon-button
       type="button"

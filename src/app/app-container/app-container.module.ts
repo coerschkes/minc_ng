@@ -13,6 +13,7 @@ import { SidenavComponent } from './sidenav/sidenav.component';
 import { PlannerComponent } from './planner/planner.component';
 import { MatMenuModule } from '@angular/material/menu';
 import {MatTooltipModule} from '@angular/material/tooltip';
+import { SettingsComponent } from './settings/settings.component';
 
 @NgModule({
   declarations: [
@@ -20,6 +21,7 @@ import {MatTooltipModule} from '@angular/material/tooltip';
     DashboardComponent,
     SidenavComponent,
     PlannerComponent,
+    SettingsComponent,
   ],
   imports: [
     CommonModule,
