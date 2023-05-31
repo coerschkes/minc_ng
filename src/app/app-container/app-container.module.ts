@@ -12,7 +12,9 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { SidenavComponent } from './sidenav/sidenav.component';
 import { PlannerComponent } from './planner/planner.component';
 import { MatMenuModule } from '@angular/material/menu';
-import {MatTooltipModule} from '@angular/material/tooltip';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatCardModule } from '@angular/material/card';
 import { SettingsComponent } from './settings/settings.component';
 
 @NgModule({
@@ -34,6 +36,8 @@ import { SettingsComponent } from './settings/settings.component';
     MatButtonModule,
     MatMenuModule,
     MatTooltipModule,
+    MatExpansionModule,
+    MatCardModule,
   ],
 })
 export class AppContainerModule {}

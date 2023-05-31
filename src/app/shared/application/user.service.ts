@@ -11,7 +11,14 @@ import {
 } from 'rxjs/operators';
 import { AuthService } from 'src/app/auth/auth.service';
 import { environment } from 'src/environments/environment';
+import { Role, roleFromString } from './model/roles.model';
 import { User } from './model/user.model';
+
+export interface UserResponseData {
+  apiKey: string;
+  username: string;
+  _roles: string[];
+}
 
 const dbUrl = environment.firebaseDbUrl;
 
@@ -67,8 +74,23 @@ export class UserService {
 
   loadUserById(userId: string): Observable<User> {
     return this.http
-      .get<User>(dbUrl + 'users/' + userId + '/user.json')
-      .pipe(catchError(this.handleError.bind(this)));
+      .get<UserResponseData>(dbUrl + 'users/' + userId + '/user.json')
+      .pipe(
+        map((userResponseData) => {
+          return new User(
+            userResponseData.apiKey,
+            userResponseData.username,
+            this.toRoles(userResponseData._roles)
+          );
+        }),
+        catchError(this.handleError.bind(this))
+      );
+  }
+
+  toRoles(roleArray: string[]): Role[] {
+    return roleArray.map((array) => {
+      return roleFromString(array);
+    });
   }
 
   loadUserForPrincipal(): Observable<User> {
