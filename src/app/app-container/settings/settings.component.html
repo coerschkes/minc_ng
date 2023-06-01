@@ -1,28 +1,53 @@
 <div style="margin-right: 24px; margin-left: 24px">
-  <h2 class="text-disabled" style="font-weight: normal;">Settings</h2>
+  <h2 class="text-disabled" style="font-weight: normal">Settings</h2>
   <mat-card>
-    <mat-card-content>Username: {{user.username}}</mat-card-content>
+    <mat-card-header class="text-disabled"
+      ><h3 style="font-weight: normal">Account</h3></mat-card-header
+    >
+    <mat-card-content>
+      <p>Username: {{ user.username }}</p>
+      <mat-divider></mat-divider>
+      <!-- todo: display roles as chips if possible -->
+      <p>Roles: {{ concatenateStringArray(user.roles) }}</p>
+      <mat-divider style="margin-bottom: 16px"></mat-divider>
+      <mat-expansion-panel
+        (opened)="panelOpenState = true"
+        (closed)="panelOpenState = false"
+        style="margin-bottom: 8px"
+      >
+        <mat-expansion-panel-header>
+          <mat-panel-title> Display name</mat-panel-title>
+        </mat-expansion-panel-header>
+        <p>I'm visible because I am open</p>
+      </mat-expansion-panel>
+      <mat-expansion-panel
+        (opened)="panelOpenState = true"
+        (closed)="panelOpenState = false"
+      >
+        <mat-expansion-panel-header>
+          <mat-panel-title> API-Key </mat-panel-title>
+        </mat-expansion-panel-header>
+        <input matInput type="text"/>
+        <mat-label
+          >Permissions:
+          {{ concatenateStringArray(tokenInfo.permissions) }}</mat-label
+        >
+        <!-- <mat-error>
+            Password is <strong>required</strong> (min len 6)</mat-error
+          > -->
+      </mat-expansion-panel>
+    </mat-card-content>
+    <!-- <mat-card>
+      <mat-card-content
+      >Username:
+      <div class="text-disabled">{{ user.username }}</div></mat-card-content
+    >
   </mat-card>
   <mat-card>
-    <mat-card-content>Roles: {{concatenateRoles()}}</mat-card-content>
+    <mat-card-content>Roles: {{ concatenateRoles() }}</mat-card-content>
+  </mat-card> -->
+    <mat-card-actions align="end" style="margin-right: 8px; margin-left: 8px">
+      <button mat-button color="primary">Delete Account</button>
+    </mat-card-actions>
   </mat-card>
-  <mat-expansion-panel
-    (opened)="panelOpenState = true"
-    (closed)="panelOpenState = false"
-  >
-    <mat-expansion-panel-header>
-      <mat-panel-title> Display name</mat-panel-title>
-    </mat-expansion-panel-header>
-    <p>I'm visible because I am open</p>
-  </mat-expansion-panel>
-  <mat-expansion-panel
-    (opened)="panelOpenState = true"
-    (closed)="panelOpenState = false"
-  >
-    <mat-expansion-panel-header>
-      <mat-panel-title> API-Key </mat-panel-title>
-    </mat-expansion-panel-header>
-    <p>I'm visible because I am open</p>
-  </mat-expansion-panel>
-  <button mat-button color="primary">Delete Account</button>
 </div>

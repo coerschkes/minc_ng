@@ -16,6 +16,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatCardModule } from '@angular/material/card';
 import { SettingsComponent } from './settings/settings.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 @NgModule({
   declarations: [
@@ -38,6 +39,7 @@ import { SettingsComponent } from './settings/settings.component';
     MatTooltipModule,
     MatExpansionModule,
     MatCardModule,
+    MatFormFieldModule
   ],
 })
 export class AppContainerModule {}

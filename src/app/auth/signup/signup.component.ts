@@ -4,12 +4,12 @@ import {
   AsyncValidatorFn,
   FormControl,
   FormGroup,
-  Validators
+  Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Observable, Subscription, catchError, map, of } from 'rxjs';
 import { Account } from 'src/app/shared/application/api/model/account.model';
-import { ApiKeyService } from './api-key.service';
+import { ApiKeyValidationService } from '../../shared/application/api-key-validation.service';
 import { SignupService } from './signup.service';
 
 @Component({
@@ -31,7 +31,7 @@ export class SignupComponent implements OnInit, OnDestroy {
   accountSub: Subscription = new Subscription();
 
   constructor(
-    private apiKeyService: ApiKeyService,
+    private apiKeyService: ApiKeyValidationService,
     private router: Router,
     private signupService: SignupService
   ) {}
@@ -42,7 +42,7 @@ export class SignupComponent implements OnInit, OnDestroy {
         this.isLoading = isLoading;
       }
     );
-    this.accountSub = this.signupService.account.subscribe((account) => {
+    this.accountSub = this.apiKeyService.account.subscribe((account) => {
       this.account = account;
     });
     this.isApiKeyLoadingSub = this.apiKeyService.isLoading.subscribe(
@@ -63,19 +63,17 @@ export class SignupComponent implements OnInit, OnDestroy {
     if (this.authForm.valid && this.accountIsValid()) {
       const email = this.authForm.value.email;
       const password = this.authForm.value.password;
-      this.signupService
-        .signup(email, password, this.apiKeyService.apiKey)
-        .subscribe({
-          error: (error) => {
-            this.signupService.isLoading.next(false);
-            this.error = error;
-          },
-          complete: () => {
-            this.signupService.isLoading.next(false);
-            this.authForm.reset();
-            this.router.navigate(['/dashboard']);
-          },
-        });
+      this.signupService.signup(email, password).subscribe({
+        error: (error) => {
+          this.signupService.isLoading.next(false);
+          this.error = error;
+        },
+        complete: () => {
+          this.signupService.isLoading.next(false);
+          this.authForm.reset();
+          this.router.navigate(['/dashboard']);
+        },
+      });
     } else {
       return;
     }
@@ -101,7 +99,7 @@ export class SignupComponent implements OnInit, OnDestroy {
           catchError((error) => {
             this.apiKeyError =
               error.message === undefined ? error : error.message;
-            this.signupService.account.next(Account.invalid());
+            this.apiKeyService.account.next(Account.invalid());
             return of({ apiKeyError: { value: control.value } });
           })
         );
