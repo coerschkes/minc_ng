@@ -5,9 +5,9 @@ import {
   forkJoin,
   mergeMap,
   switchMap,
-  take
+  take,
 } from 'rxjs';
-import { Account } from 'src/app/shared/application/api/model/account.model';
+import { ApiStateService } from 'src/app/shared/application/api/api-state.service';
 import { Role } from 'src/app/shared/application/model/roles.model';
 import { User } from 'src/app/shared/application/model/user.model';
 import { UserService } from 'src/app/shared/application/user.service';
@@ -16,26 +16,29 @@ import { AuthService } from '../auth.service';
 @Injectable({ providedIn: 'root' })
 export class SignupService {
   isLoading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  error: BehaviorSubject<string> = new BehaviorSubject<string>('');
-  account: BehaviorSubject<Account> = new BehaviorSubject<Account>(
-    Account.invalid()
-  );
-  apiPermissions: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
-  loadingState: BehaviorSubject<string> = new BehaviorSubject<string>('');
 
-  constructor(private auth: AuthService, private user: UserService) {}
+  constructor(
+    private auth: AuthService,
+    private user: UserService,
+    private apiState: ApiStateService
+  ) {}
 
-  signup(email: string, password: string, apiKey: string): Observable<any> {
+  //has to be called after api-key-validation. Depends on apiState.account and apiState.apiKey
+  signup(email: string, password: string): Observable<any> {
     this.isLoading.next(true);
-    return this.account.pipe(
-      take(1),
-      switchMap((account) => {
-        const user: User = new User(apiKey, account.name, [Role.MEMBER]);
+    return forkJoin({
+      apiKey: this.apiState.apiKey.pipe(take(1)),
+      account: this.apiState.account.pipe(take(1)),
+    }).pipe(
+      switchMap((res) => {
+        const user: User = new User(res.apiKey, res.account.name, [
+          Role.MEMBER,
+        ]);
         return this.auth.signup(email, password).pipe(
           mergeMap(() => {
             return forkJoin({
               userSave: this.user.saveUser(user),
-              username: this.user.saveUsername(account.name),
+              username: this.user.saveUsername(res.account.name),
             });
           })
         );

@@ -1,21 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { User } from '../shared/application/model/user.model';
-import { UserService } from '../shared/application/user.service';
+import { AppStateService } from 'src/app/shared/application/app-state.service';
+import { User } from 'src/app/shared/application/model/user.model';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css'],
+  styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent implements OnInit {
   currentUser: User = User.invalid();
   sub: Subscription = new Subscription();
 
-  constructor(private userService: UserService) {}
+  constructor(private appState: AppStateService) {}
 
   ngOnInit(): void {
-    this.sub = this.userService.userSubject.subscribe((user) => {
+    this.sub = this.appState.user.subscribe((user) => {
       this.currentUser = user;
     });
   }

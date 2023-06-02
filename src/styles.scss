@@ -1,0 +1,36 @@
+@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
+
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.red-snackbar {
+  background: #f44336;
+  border-radius: 4px;
+}
+.mat-mdc-snack-bar-container {
+  &.red-snackbar {
+    --mdc-snackbar-container-color: #f44336;
+    --mat-snack-bar-button-color: #fff;
+    --mdc-snackbar-supporting-text-color: #fff;
+  }
+}
+
+.text-disabled{
+  color: #b0b0b0;
+}
+
+html, body{
+  margin: 0;
+  overflow-y: hidden;
+  height: 100vh;
+}
+
+.full-height {
+  margin: 0;
+  height:100vh;
+  display: block;
+  overflow-y: hidden;
+}
+
+.mat-drawer-inner-container{
+  margin-right: 32px;
+}
