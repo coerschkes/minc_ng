@@ -11,6 +11,7 @@ import {
 } from 'rxjs/operators';
 import { AuthStateService } from 'src/app/auth/auth-state.service';
 import { environment } from 'src/environments/environment';
+import { ApiStateService } from './api/api-state.service';
 import { AppStateService } from './app-state.service';
 import { Role, roleFromString } from './model/roles.model';
 import { User } from './model/user.model';
@@ -28,7 +29,8 @@ export class UserService {
   constructor(
     private http: HttpClient,
     private authState: AuthStateService,
-    private appState: AppStateService
+    private appState: AppStateService,
+    private apiState: ApiStateService
   ) {}
 
   //todo: implement delete methods
@@ -105,6 +107,14 @@ export class UserService {
       .pipe(
         tap((user: User) => {
           this.appState.user.next(user);
+          if (
+            user.apiKey !== '' &&
+            user.apiKey !== null &&
+            user.apiKey !== undefined
+          ) {
+            //update the apiKey in apiState when user is loaded from the database
+            this.apiState.apiKey.next(user.apiKey);
+          }
         })
       );
   }

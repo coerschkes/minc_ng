@@ -7,8 +7,7 @@ import {
   switchMap,
   take,
 } from 'rxjs';
-import { ApiKeyValidationService } from 'src/app/shared/application/api-key-validation.service';
-import { ApiUrlBuilderService } from 'src/app/shared/application/api/api-url-builder.service';
+import { ApiStateService } from 'src/app/shared/application/api/api-state.service';
 import { Role } from 'src/app/shared/application/model/roles.model';
 import { User } from 'src/app/shared/application/model/user.model';
 import { UserService } from 'src/app/shared/application/user.service';
@@ -21,15 +20,15 @@ export class SignupService {
   constructor(
     private auth: AuthService,
     private user: UserService,
-    private apiUrlBuilderService: ApiUrlBuilderService,
-    private apiKeyValidationService: ApiKeyValidationService
+    private apiState: ApiStateService
   ) {}
 
+  //has to be called after api-key-validation. Depends on apiState.account and apiState.apiKey
   signup(email: string, password: string): Observable<any> {
     this.isLoading.next(true);
     return forkJoin({
-      apiKey: this.apiUrlBuilderService.apiKey.pipe(take(1)),
-      account: this.apiKeyValidationService.account.pipe(take(1)),
+      apiKey: this.apiState.apiKey.pipe(take(1)),
+      account: this.apiState.account.pipe(take(1)),
     }).pipe(
       switchMap((res) => {
         const user: User = new User(res.apiKey, res.account.name, [

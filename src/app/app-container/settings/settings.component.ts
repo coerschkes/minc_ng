@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { ApiStateService } from 'src/app/shared/application/api/api-state.service';
 import { ApiService } from 'src/app/shared/application/api/api.service';
 import { TokenInfo } from 'src/app/shared/application/api/model/tokeninfo.model';
 import { AppStateService } from 'src/app/shared/application/app-state.service';
@@ -17,19 +18,25 @@ export class SettingsComponent implements OnInit, OnDestroy {
   userSub: Subscription = new Subscription();
   tokenInfoSub: Subscription = new Subscription();
 
-  constructor(private appState: AppStateService, private api: ApiService) {}
-
-  //todo: on login/init app -> load api key centralized and dont load it in every component (also make sure its not changing unless by settings)
+  constructor(
+    private appState: AppStateService,
+    private api: ApiService,
+    private apiState: ApiStateService
+  ) {}
 
   ngOnInit(): void {
-    this.userSub = this.appState.user.subscribe((user) => {
-      this.user = user;
-      // this.api.apiKey = this.user.apiKey;
-      this.tokenInfoSub.unsubscribe();
-      this.tokenInfoSub = this.api.tokenInfo.subscribe((tokenInfo) => {
-        this.tokenInfo = tokenInfo;
-        console.log(this.tokenInfo.permissions);
-      });
+    this.tokenInfoSub = this.apiState.tokenInfo.subscribe((tokenInfo) => {
+      this.tokenInfo = tokenInfo;
+    });
+    this.userSub = this.appState.user.subscribe({
+      next: (user) => {
+        this.user = user;
+      },
+      complete: () => {
+        this.api.tokenInfo.subscribe((tokenInfo) => {
+          this.apiState.tokenInfo.next(tokenInfo);
+        });
+      },
     });
   }
 
