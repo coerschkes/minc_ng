@@ -2,8 +2,8 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ApiService } from 'src/app/shared/application/api/api.service';
 import { TokenInfo } from 'src/app/shared/application/api/model/tokeninfo.model';
+import { AppStateService } from 'src/app/shared/application/app-state.service';
 import { User } from 'src/app/shared/application/model/user.model';
-import { UserService } from 'src/app/shared/application/user.service';
 
 @Component({
   selector: 'app-settings',
@@ -17,12 +17,12 @@ export class SettingsComponent implements OnInit, OnDestroy {
   userSub: Subscription = new Subscription();
   tokenInfoSub: Subscription = new Subscription();
 
-  constructor(private userService: UserService, private api: ApiService) {}
+  constructor(private appState: AppStateService, private api: ApiService) {}
 
   //todo: on login/init app -> load api key centralized and dont load it in every component (also make sure its not changing unless by settings)
 
   ngOnInit(): void {
-    this.userSub = this.userService.userSubject.subscribe((user) => {
+    this.userSub = this.appState.user.subscribe((user) => {
       this.user = user;
       // this.api.apiKey = this.user.apiKey;
       this.tokenInfoSub.unsubscribe();

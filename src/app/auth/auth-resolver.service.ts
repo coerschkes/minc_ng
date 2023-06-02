@@ -5,5 +5,5 @@ import { UserService } from '../shared/application/user.service';
 
 export const AuthResolver: ResolveFn<void> = () => {
   //todo: check if useful -> probably not
-  inject(UserService).userSubject.next(User.invalid());
+  // inject(UserService).userSubject.next(User.invalid());
 };

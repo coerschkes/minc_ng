@@ -2,8 +2,8 @@ import { MediaMatcher } from '@angular/cdk/layout';
 import { ChangeDetectorRef, Component } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
+import { AppStateService } from 'src/app/shared/application/app-state.service';
 import { User } from 'src/app/shared/application/model/user.model';
-import { UserService } from 'src/app/shared/application/user.service';
 
 @Component({
   selector: 'app-sidenav',
@@ -21,7 +21,7 @@ export class SidenavComponent {
     changeDetectorRef: ChangeDetectorRef,
     media: MediaMatcher,
     private authService: AuthService,
-    private userService: UserService
+    private appState: AppStateService
   ) {
     this.mobileQuery = media.matchMedia('(max-width: 600px)');
     this._mobileQueryListener = () => changeDetectorRef.detectChanges();
@@ -29,7 +29,7 @@ export class SidenavComponent {
   }
 
   ngOnInit(): void {
-    this.sub = this.userService.userSubject.subscribe((user) => {
+    this.sub = this.appState.user.subscribe((user) => {
       this.currentUser = user;
     });
   }

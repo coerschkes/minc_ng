@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import {
   catchError,
   exhaustMap,
@@ -11,6 +11,7 @@ import {
 } from 'rxjs/operators';
 import { AuthService } from 'src/app/auth/auth.service';
 import { environment } from 'src/environments/environment';
+import { AppStateService } from './app-state.service';
 import { Role, roleFromString } from './model/roles.model';
 import { User } from './model/user.model';
 
@@ -24,11 +25,11 @@ const dbUrl = environment.firebaseDbUrl;
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
-  userSubject: BehaviorSubject<User> = new BehaviorSubject<User>(
-    User.invalid()
-  );
-
-  constructor(private http: HttpClient, private auth: AuthService) {}
+  constructor(
+    private http: HttpClient,
+    private auth: AuthService,
+    private appState: AppStateService
+  ) {}
 
   //todo: implement delete methods
 
@@ -103,7 +104,7 @@ export class UserService {
       )
       .pipe(
         tap((user: User) => {
-          this.userSubject.next(user);
+          this.appState.user.next(user);
         })
       );
   }
