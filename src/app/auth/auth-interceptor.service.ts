@@ -6,17 +6,17 @@ import {
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, exhaustMap, take } from 'rxjs';
-import { AuthService } from './auth.service';
+import { AuthStateService } from './auth-state.service';
 
 @Injectable()
 export class AuthInterceptorService implements HttpInterceptor {
-  constructor(private authService: AuthService) {}
+  constructor(private authState: AuthStateService) {}
 
   intercept(
     req: HttpRequest<any>,
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
-    return this.authService.principalSubject.pipe(
+    return this.authState.principalSubject.pipe(
       take(1),
       exhaustMap((principal) => {
         if (!principal || !principal.token) {

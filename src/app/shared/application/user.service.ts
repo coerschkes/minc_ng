@@ -9,7 +9,7 @@ import {
   take,
   tap,
 } from 'rxjs/operators';
-import { AuthService } from 'src/app/auth/auth.service';
+import { AuthStateService } from 'src/app/auth/auth-state.service';
 import { environment } from 'src/environments/environment';
 import { AppStateService } from './app-state.service';
 import { Role, roleFromString } from './model/roles.model';
@@ -27,7 +27,7 @@ const dbUrl = environment.firebaseDbUrl;
 export class UserService {
   constructor(
     private http: HttpClient,
-    private auth: AuthService,
+    private authState: AuthStateService,
     private appState: AppStateService
   ) {}
 
@@ -63,7 +63,7 @@ export class UserService {
   }
 
   saveUser(user: User): Observable<User> {
-    return this.auth.principalSubject.pipe(
+    return this.authState.principalSubject.pipe(
       take(1),
       exhaustMap((principal) => {
         return this.http
@@ -95,7 +95,7 @@ export class UserService {
   }
 
   loadUserForPrincipal(): Observable<User> {
-    return this.auth.principalSubject
+    return this.authState.principalSubject
       .pipe(
         take(1),
         exhaustMap((principal) => {
@@ -116,7 +116,7 @@ export class UserService {
   }
 
   updateUserForPrincipal(user: User): Observable<any> {
-    return this.auth.principalSubject.pipe(
+    return this.authState.principalSubject.pipe(
       take(1),
       exhaustMap((principal) => {
         return this.updateUserById(principal.id, user);
