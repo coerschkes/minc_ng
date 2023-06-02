@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, map, take } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { ApiStateService } from './api-state.service';
 
 const baseApiUrl = 'https://api.guildwars2.com/v2/';
@@ -18,7 +18,6 @@ export class ApiUrlBuilderService {
 
   private constructUrl(endpoint: string): Observable<string> {
     return this.apiState.apiKey.pipe(
-      take(1),
       map((apiKey) => baseApiUrl + endpoint + '?access_token=' + apiKey)
     );
   }

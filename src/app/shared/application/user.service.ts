@@ -112,7 +112,6 @@ export class UserService {
             user.apiKey !== null &&
             user.apiKey !== undefined
           ) {
-            //update the apiKey in apiState when user is loaded from the database
             this.apiState.apiKey.next(user.apiKey);
           }
         })

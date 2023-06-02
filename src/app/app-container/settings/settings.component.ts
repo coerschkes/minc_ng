@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ApiStateService } from 'src/app/shared/application/api/api-state.service';
-import { ApiService } from 'src/app/shared/application/api/api.service';
 import { TokenInfo } from 'src/app/shared/application/api/model/tokeninfo.model';
 import { AppStateService } from 'src/app/shared/application/app-state.service';
 import { User } from 'src/app/shared/application/model/user.model';
@@ -20,7 +19,6 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   constructor(
     private appState: AppStateService,
-    private api: ApiService,
     private apiState: ApiStateService
   ) {}
 
@@ -28,15 +26,8 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.tokenInfoSub = this.apiState.tokenInfo.subscribe((tokenInfo) => {
       this.tokenInfo = tokenInfo;
     });
-    this.userSub = this.appState.user.subscribe({
-      next: (user) => {
-        this.user = user;
-      },
-      complete: () => {
-        this.api.tokenInfo.subscribe((tokenInfo) => {
-          this.apiState.tokenInfo.next(tokenInfo);
-        });
-      },
+    this.userSub = this.appState.user.subscribe((user) => {
+      this.user = user;
     });
   }
 

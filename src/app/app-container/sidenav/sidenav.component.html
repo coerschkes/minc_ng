@@ -2,9 +2,11 @@
   <button mat-icon-button (click)="snav.toggle()">
     <mat-icon>menu</mat-icon>
   </button>
-  <h1 class="app-name">MiNc</h1>
+  <h1 class="app-name">MiNc | {{ currentUser.username }}</h1>
   <div style="margin-right: 0; margin-left: auto">
-    <a [routerLink]="['settings']" mat-icon-button matTooltip="Settings"><mat-icon>settings</mat-icon></a>
+    <a [routerLink]="['settings']" mat-icon-button matTooltip="Settings"
+      ><mat-icon>settings</mat-icon></a
+    >
     <!-- <button mat-icon-button type="button" matTooltip="Settings">
       <mat-icon>settings</mat-icon>
     </button> -->
@@ -26,10 +28,6 @@
     fixedTopGap="56"
   >
     <mat-nav-list>
-      <p class="text-disabled" style="padding-left: 16px; padding-right: 16px">
-        {{ currentUser.username }}
-      </p>
-      <mat-divider style="margin-bottom: 8px"></mat-divider>
       <a mat-list-item [routerLink]="['dashboard']">Dashboard</a>
       <a mat-list-item [routerLink]="['planner']">Raidplanner</a>
     </mat-nav-list>
