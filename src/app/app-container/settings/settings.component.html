@@ -7,8 +7,10 @@
     <mat-card-content>
       <p>Username: {{ user.username }}</p>
       <mat-divider></mat-divider>
-      <!-- todo: display roles as chips if possible -->
-      <p>Roles: {{ concatenateStringArray(user.roles) }}</p>
+      <mat-chip-listbox style="margin-left: 8px; margin-top: 8px; margin-bottom: 8px;">
+        <mat-label style="margin-top: 10px">Roles: </mat-label>
+        <mat-chip-option *ngFor="let role of user.roles" [selectable]="false" [selected]="false">{{ role }}</mat-chip-option>
+      </mat-chip-listbox>
       <mat-divider style="margin-bottom: 16px"></mat-divider>
       <mat-expansion-panel
         (opened)="panelOpenState = true"
