@@ -7,9 +7,16 @@
     <mat-card-content>
       <p>Username: {{ user.username }}</p>
       <mat-divider></mat-divider>
-      <mat-chip-listbox style="margin-left: 8px; margin-top: 8px; margin-bottom: 8px;">
+      <mat-chip-listbox
+        style="margin-left: 8px; margin-top: 8px; margin-bottom: 8px"
+      >
         <mat-label style="margin-top: 10px">Roles: </mat-label>
-        <mat-chip-option *ngFor="let role of user.roles" [selectable]="false" [selected]="false">{{ role }}</mat-chip-option>
+        <mat-chip-option
+          *ngFor="let role of user.roles"
+          [selectable]="false"
+          [selected]="false"
+          >{{ role | lowercase }}</mat-chip-option
+        >
       </mat-chip-listbox>
       <mat-divider style="margin-bottom: 16px"></mat-divider>
       <mat-expansion-panel
@@ -29,25 +36,20 @@
         <mat-expansion-panel-header>
           <mat-panel-title> API-Key </mat-panel-title>
         </mat-expansion-panel-header>
-        <input matInput type="text"/>
-        <mat-label
-          >Permissions:
-          {{ concatenateStringArray(tokenInfo.permissions) }}</mat-label
+        <input matInput type="text" />
+        <mat-chip-listbox
+          style="margin-left: 8px; margin-top: 8px; margin-bottom: 8px"
         >
-        <!-- <mat-error>
-            Password is <strong>required</strong> (min len 6)</mat-error
-          > -->
+          <mat-label style="margin-top: 10px">Permissions: </mat-label>
+          <mat-chip-option
+            *ngFor="let permission of tokenInfo.permissions"
+            [selectable]="false"
+            [selected]="false"
+            >{{ permission }}</mat-chip-option
+          >
+        </mat-chip-listbox>
       </mat-expansion-panel>
     </mat-card-content>
-    <!-- <mat-card>
-      <mat-card-content
-      >Username:
-      <div class="text-disabled">{{ user.username }}</div></mat-card-content
-    >
-  </mat-card>
-  <mat-card>
-    <mat-card-content>Roles: {{ concatenateRoles() }}</mat-card-content>
-  </mat-card> -->
     <mat-card-actions align="end" style="margin-right: 8px; margin-left: 8px">
       <button mat-button color="primary">Delete Account</button>
     </mat-card-actions>
