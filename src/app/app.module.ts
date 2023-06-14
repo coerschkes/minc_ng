@@ -11,6 +11,8 @@ import { AuthInterceptorService } from './auth/auth-interceptor.service';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { HttpErrorHandlerInterceptor } from './shared/application/http-error-handler-interceptor.service';
 import { LoggingInterceptorService } from './shared/application/logging-interceptor.service';
+import { StoreModule } from '@ngrx/store';
+import { EffectsModule } from '@ngrx/effects';
 
 @NgModule({
   declarations: [AppComponent, NotFoundComponent],
@@ -21,6 +23,8 @@ import { LoggingInterceptorService } from './shared/application/logging-intercep
     HttpClientModule,
     BrowserAnimationsModule,
     MatSnackBarModule,
+    StoreModule.forRoot({}),
+    EffectsModule.forRoot([]),
   ],
   providers: [
     {
