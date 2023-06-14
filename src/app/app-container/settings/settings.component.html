@@ -5,14 +5,14 @@
       ><h3 style="font-weight: normal">Account</h3></mat-card-header
     >
     <mat-card-content>
-      <p>Username: {{ user.username }}</p>
+      <p>Username: {{ (user$ | async)?.username }}</p>
       <mat-divider></mat-divider>
       <mat-chip-listbox
         style="margin-left: 8px; margin-top: 8px; margin-bottom: 8px"
       >
         <mat-label style="margin-top: 10px">Roles: </mat-label>
         <mat-chip-option
-          *ngFor="let role of user.roles"
+          *ngFor="let role of (user$ | async)?.roles"
           [selectable]="false"
           [selected]="false"
           >{{ role | lowercase }}</mat-chip-option
@@ -36,7 +36,12 @@
         <mat-expansion-panel-header>
           <mat-panel-title> API-Key </mat-panel-title>
         </mat-expansion-panel-header>
-        <input matInput class="full-width-input" style="width: 100%;" type="text" />
+        <input
+          matInput
+          class="full-width-input"
+          style="width: 100%"
+          type="text"
+        />
         <mat-chip-listbox
           style="margin-left: 8px; margin-top: 8px; margin-bottom: 8px"
         >

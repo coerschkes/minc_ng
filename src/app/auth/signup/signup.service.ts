@@ -9,7 +9,7 @@ import {
 } from 'rxjs';
 import { ApiStateService } from 'src/app/shared/application/api/api-state.service';
 import { Role } from 'src/app/shared/application/model/roles.model';
-import { User } from 'src/app/shared/application/model/user.model';
+import { UserState } from 'src/app/shared/application/model/user.model';
 import { UserService } from 'src/app/shared/application/user.service';
 import { AuthService } from '../auth.service';
 
@@ -31,7 +31,7 @@ export class SignupService {
       account: this.apiState.account.pipe(take(1)),
     }).pipe(
       switchMap((res) => {
-        const user: User = new User(res.apiKey, res.account.name, [
+        const user: UserState = new UserState(res.apiKey, res.account.name, [
           Role.MEMBER,
         ]);
         return this.auth.signup(email, password).pipe(

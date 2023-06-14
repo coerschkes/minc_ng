@@ -19,7 +19,6 @@ export class ApiKeyValidationService {
 
   validateApiKey(apiKey: string): Observable<any> {
     this.apiState.apiKey.next(apiKey);
-    console.log('apikey next called')
     this.isLoading.next(true);
     return this.api.account.pipe(
       switchMap((account) => {

@@ -2,14 +2,11 @@
   <button mat-icon-button (click)="snav.toggle()">
     <mat-icon>menu</mat-icon>
   </button>
-  <h1 class="app-name">MiNc | {{ currentUser.username }}</h1>
+  <h1 class="app-name">MiNc | {{ currentUsername$ | async }}</h1>
   <div style="margin-right: 0; margin-left: auto">
     <a [routerLink]="['settings']" mat-icon-button matTooltip="Settings"
       ><mat-icon>settings</mat-icon></a
     >
-    <!-- <button mat-icon-button type="button" matTooltip="Settings">
-      <mat-icon>settings</mat-icon>
-    </button> -->
     <button
       mat-icon-button
       type="button"

@@ -1,5 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Store } from '@ngrx/store';
 import { Observable, throwError } from 'rxjs';
 import {
   catchError,
@@ -10,11 +11,11 @@ import {
   tap,
 } from 'rxjs/operators';
 import { AuthStateService } from 'src/app/auth/auth-state.service';
+import { updateUser } from 'src/app/store/app/user.actions';
 import { environment } from 'src/environments/environment';
 import { ApiStateService } from './api/api-state.service';
-import { AppStateService } from './app-state.service';
 import { Role, roleFromString } from './model/roles.model';
-import { User } from './model/user.model';
+import { UserState } from './model/user.model';
 
 export interface UserResponseData {
   apiKey: string;
@@ -29,8 +30,8 @@ export class UserService {
   constructor(
     private http: HttpClient,
     private authState: AuthStateService,
-    private appState: AppStateService,
-    private apiState: ApiStateService
+    private apiState: ApiStateService,
+    private store: Store<{ user: UserState }>
   ) {}
 
   //todo: implement delete methods
@@ -64,23 +65,23 @@ export class UserService {
       .pipe(catchError(this.handleError.bind(this)));
   }
 
-  saveUser(user: User): Observable<User> {
+  saveUser(user: UserState): Observable<UserState> {
     return this.authState.principalSubject.pipe(
       take(1),
       exhaustMap((principal) => {
         return this.http
-          .put<User>(dbUrl + 'users/' + principal.id + '/user.json', user)
+          .put<UserState>(dbUrl + 'users/' + principal.id + '/user.json', user)
           .pipe(catchError(this.handleError.bind(this)));
       })
     );
   }
 
-  loadUserById(userId: string): Observable<User> {
+  loadUserById(userId: string): Observable<UserState> {
     return this.http
       .get<UserResponseData>(dbUrl + 'users/' + userId + '/user.json')
       .pipe(
         map((userResponseData) => {
-          return new User(
+          return new UserState(
             userResponseData.apiKey,
             userResponseData.username,
             this.toRoles(userResponseData._roles)
@@ -96,7 +97,7 @@ export class UserService {
     });
   }
 
-  loadUserForPrincipal(): Observable<User> {
+  loadUserForPrincipal(): Observable<UserState> {
     return this.authState.principalSubject
       .pipe(
         take(1),
@@ -105,8 +106,8 @@ export class UserService {
         })
       )
       .pipe(
-        tap((user: User) => {
-          this.appState.user.next(user);
+        tap((user: UserState) => {
+          this.store.dispatch(updateUser({ user: user }));
           if (
             user.apiKey !== '' &&
             user.apiKey !== null &&
@@ -118,13 +119,13 @@ export class UserService {
       );
   }
 
-  updateUserById(userId: string, user: User): Observable<User> {
+  updateUserById(userId: string, user: UserState): Observable<UserState> {
     return this.http
-      .put<User>(dbUrl + 'users/' + userId + '/user.json', user)
+      .put<UserState>(dbUrl + 'users/' + userId + '/user.json', user)
       .pipe(catchError(this.handleError.bind(this)));
   }
 
-  updateUserForPrincipal(user: User): Observable<any> {
+  updateUserForPrincipal(user: UserState): Observable<any> {
     return this.authState.principalSubject.pipe(
       take(1),
       exhaustMap((principal) => {

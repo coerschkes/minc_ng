@@ -1,12 +1,12 @@
 import { inject } from '@angular/core';
 import { ResolveFn } from '@angular/router';
 import { AuthService } from 'src/app/auth/auth.service';
-import { User } from './model/user.model';
+import { UserState } from './model/user.model';
 import { UserService } from './user.service';
 import { NotificationService } from './notification.service';
 
-export const UserResolver: ResolveFn<User> = () => {
-  let user: User = User.invalid();
+export const UserResolver: ResolveFn<UserState> = () => {
+  let user: UserState = UserState.invalid();
   let auth: AuthService = inject(AuthService);
   let notification: NotificationService = inject(NotificationService);
   inject(UserService)

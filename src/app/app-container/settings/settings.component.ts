@@ -1,9 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { Observable, Subscription } from 'rxjs';
 import { ApiStateService } from 'src/app/shared/application/api/api-state.service';
 import { TokenInfo } from 'src/app/shared/application/api/model/tokeninfo.model';
-import { AppStateService } from 'src/app/shared/application/app-state.service';
-import { User } from 'src/app/shared/application/model/user.model';
+import { UserState } from 'src/app/shared/application/model/user.model';
+import { userSelector } from 'src/app/store/app/user.selector';
 
 @Component({
   selector: 'app-settings',
@@ -11,28 +12,24 @@ import { User } from 'src/app/shared/application/model/user.model';
   styleUrls: ['./settings.component.scss'],
 })
 export class SettingsComponent implements OnInit, OnDestroy {
-  user: User = User.invalid();
+  user$: Observable<UserState> = new Observable<UserState>();
   tokenInfo: TokenInfo = TokenInfo.invalid();
   panelOpenState = false;
-  userSub: Subscription = new Subscription();
   tokenInfoSub: Subscription = new Subscription();
 
   constructor(
-    private appState: AppStateService,
-    private apiState: ApiStateService
+    private apiState: ApiStateService,
+    private store: Store<{ user: UserState }>
   ) {}
 
   ngOnInit(): void {
+    this.user$ = this.store.select(userSelector);
     this.tokenInfoSub = this.apiState.tokenInfo.subscribe((tokenInfo) => {
       this.tokenInfo = tokenInfo;
-    });
-    this.userSub = this.appState.user.subscribe((user) => {
-      this.user = user;
     });
   }
 
   ngOnDestroy(): void {
-    this.userSub.unsubscribe();
     this.tokenInfoSub.unsubscribe();
   }
 

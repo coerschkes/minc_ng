@@ -13,6 +13,8 @@ import { HttpErrorHandlerInterceptor } from './shared/application/http-error-han
 import { LoggingInterceptorService } from './shared/application/logging-interceptor.service';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
+import { userReducer } from './store/app/user.reducer';
+import { UserEffects } from './store/app/user.effects';
 
 @NgModule({
   declarations: [AppComponent, NotFoundComponent],
@@ -23,8 +25,8 @@ import { EffectsModule } from '@ngrx/effects';
     HttpClientModule,
     BrowserAnimationsModule,
     MatSnackBarModule,
-    StoreModule.forRoot({}),
-    EffectsModule.forRoot([]),
+    StoreModule.forRoot({user: userReducer}),
+    EffectsModule.forRoot([UserEffects]),
   ],
   providers: [
     {
