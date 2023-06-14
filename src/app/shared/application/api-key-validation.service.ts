@@ -1,12 +1,10 @@
 import { Injectable } from '@angular/core';
+import { Store } from '@ngrx/store';
 import { BehaviorSubject, Observable, finalize, map, switchMap } from 'rxjs';
 import { ApiService } from 'src/app/shared/application/api/api.service';
 import { UserService } from 'src/app/shared/application/user.service';
+import { updateAccount, updateApiKey } from 'src/app/store/api/api.actions';
 import { environment } from 'src/environments/environment';
-import { ApiStateService } from './api/api-state.service';
-import { Store } from '@ngrx/store';
-import { apiKeySelector } from 'src/app/store/api/api.selector';
-import { updateApiKey } from 'src/app/store/api/api.actions';
 
 const heimGuildId = environment.heimGuildId;
 
@@ -17,7 +15,6 @@ export class ApiKeyValidationService {
   constructor(
     private api: ApiService,
     private user: UserService,
-    private apiState: ApiStateService,
     private store: Store
   ) {}
 
@@ -30,7 +27,7 @@ export class ApiKeyValidationService {
           return this.user.loadUsernames().pipe(
             map((resData) => {
               if (resData !== null && !resData.includes(account.name)) {
-                this.apiState.account.next(account);
+                this.store.dispatch(updateAccount({ account }));
               } else {
                 throw new Error('This account is already registered!');
               }

@@ -11,12 +11,11 @@ import {
   tap,
 } from 'rxjs/operators';
 import { AuthStateService } from 'src/app/auth/auth-state.service';
+import { updateApiKey } from 'src/app/store/api/api.actions';
 import { updateUser } from 'src/app/store/app/user.actions';
 import { environment } from 'src/environments/environment';
-import { ApiStateService } from './api/api-state.service';
 import { Role, roleFromString } from './model/roles.model';
 import { UserState } from './model/user.model';
-import { updateApiKey } from 'src/app/store/api/api.actions';
 
 export interface UserResponseData {
   apiKey: string;
@@ -31,7 +30,6 @@ export class UserService {
   constructor(
     private http: HttpClient,
     private authState: AuthStateService,
-    private apiState: ApiStateService,
     private store: Store
   ) {}
 

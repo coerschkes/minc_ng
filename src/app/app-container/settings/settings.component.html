@@ -47,7 +47,7 @@
         >
           <mat-label style="margin-top: 10px">Permissions: </mat-label>
           <mat-chip-option
-            *ngFor="let permission of tokenInfo.permissions"
+            *ngFor="let permission of (tokenInfo$ | async)?.permissions"
             [selectable]="false"
             [selected]="false"
             >{{ permission }}</mat-chip-option

@@ -2,8 +2,9 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Subscription, forkJoin, tap } from 'rxjs';
 import { AuthService } from './auth/auth.service';
-import { ApiStateService } from './shared/application/api/api-state.service';
 import { ApiService } from './shared/application/api/api.service';
+import { AccountState } from './shared/application/api/model/account.model';
+import { updateAccount, updateTokenInfo } from './store/api/api.actions';
 import { apiKeySelector } from './store/api/api.selector';
 
 @Component({
@@ -18,31 +19,39 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     private api: ApiService,
-    private apiState: ApiStateService,
-    private store: Store<{ apiKey: string }>
+    private apiKeyStore: Store<{ apiKey: string }>,
+    private accountStore: Store<{ account: AccountState }>
   ) {}
 
   ngOnInit(): void {
     this.authService.autoLogin();
-    this.apiKeySub = this.store.select(apiKeySelector).subscribe((apiKey) => {
-      if (
-        apiKey !== null &&
-        apiKey !== '' &&
-        apiKey !== undefined &&
-        apiKey !== this.currentApiKey
-      ) {
-        //preload account and tokenInfo if apiKey is set
-        this.currentApiKey = apiKey;
-        forkJoin({
-          account: this.api.account.pipe(
-            tap((resData) => this.apiState.account.next(resData))
-          ),
-          tokenInfo: this.api.tokenInfo.pipe(
-            tap((resData) => this.apiState.tokenInfo.next(resData))
-          ),
-        }).subscribe();
-      }
-    });
+    this.apiKeySub = this.apiKeyStore
+      .select(apiKeySelector)
+      .subscribe((apiKey) => {
+        if (
+          apiKey !== null &&
+          apiKey !== '' &&
+          apiKey !== undefined &&
+          apiKey !== this.currentApiKey
+        ) {
+          //preload account and tokenInfo if apiKey is set
+          this.currentApiKey = apiKey;
+          forkJoin({
+            account: this.api.account.pipe(
+              tap((resData) =>
+                this.accountStore.dispatch(updateAccount({ account: resData }))
+              )
+            ),
+            tokenInfo: this.api.tokenInfo.pipe(
+              tap((resData) =>
+                this.accountStore.dispatch(
+                  updateTokenInfo({ tokenInfo: resData })
+                )
+              )
+            ),
+          }).subscribe();
+        }
+      });
   }
 
   ngOnDestroy(): void {
