@@ -4,6 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { StoreModule } from '@ngrx/store';
 import { AppContainerModule } from './app-container/app-container.module';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -11,10 +12,8 @@ import { AuthInterceptorService } from './auth/auth-interceptor.service';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { HttpErrorHandlerInterceptor } from './shared/application/http-error-handler-interceptor.service';
 import { LoggingInterceptorService } from './shared/application/logging-interceptor.service';
-import { StoreModule } from '@ngrx/store';
-import { EffectsModule } from '@ngrx/effects';
+import { apiKeyReducer } from './store/api/api.reducer';
 import { userReducer } from './store/app/user.reducer';
-import { UserEffects } from './store/app/user.effects';
 
 @NgModule({
   declarations: [AppComponent, NotFoundComponent],
@@ -25,8 +24,7 @@ import { UserEffects } from './store/app/user.effects';
     HttpClientModule,
     BrowserAnimationsModule,
     MatSnackBarModule,
-    StoreModule.forRoot({user: userReducer}),
-    EffectsModule.forRoot([UserEffects]),
+    StoreModule.forRoot({ user: userReducer, apiKey: apiKeyReducer }),
   ],
   providers: [
     {

@@ -4,6 +4,9 @@ import { ApiService } from 'src/app/shared/application/api/api.service';
 import { UserService } from 'src/app/shared/application/user.service';
 import { environment } from 'src/environments/environment';
 import { ApiStateService } from './api/api-state.service';
+import { Store } from '@ngrx/store';
+import { apiKeySelector } from 'src/app/store/api/api.selector';
+import { updateApiKey } from 'src/app/store/api/api.actions';
 
 const heimGuildId = environment.heimGuildId;
 
@@ -14,11 +17,12 @@ export class ApiKeyValidationService {
   constructor(
     private api: ApiService,
     private user: UserService,
-    private apiState: ApiStateService
+    private apiState: ApiStateService,
+    private store: Store
   ) {}
 
   validateApiKey(apiKey: string): Observable<any> {
-    this.apiState.apiKey.next(apiKey);
+    this.store.dispatch(updateApiKey({ apiKey }));
     this.isLoading.next(true);
     return this.api.account.pipe(
       switchMap((account) => {

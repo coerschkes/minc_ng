@@ -1,11 +1,11 @@
-export class TokenInfo {
+export class TokenInfoState {
   constructor(
     public id: string,
     public name: string,
     public permissions: string[]
   ) {}
 
-  static isValid(tokenInfo: TokenInfo): boolean {
+  static isValid(tokenInfo: TokenInfoState): boolean {
     return (
       tokenInfo.id !== '' &&
       tokenInfo.name !== '' &&
@@ -14,7 +14,7 @@ export class TokenInfo {
     );
   }
 
-  static invalid(): TokenInfo {
-    return new TokenInfo('', '', []);
+  static invalid(): TokenInfoState {
+    return new TokenInfoState('', '', []);
   }
 }

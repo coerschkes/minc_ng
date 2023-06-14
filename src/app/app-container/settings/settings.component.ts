@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
 import { ApiStateService } from 'src/app/shared/application/api/api-state.service';
-import { TokenInfo } from 'src/app/shared/application/api/model/tokeninfo.model';
+import { TokenInfoState } from 'src/app/shared/application/api/model/tokeninfo.model';
 import { UserState } from 'src/app/shared/application/model/user.model';
 import { userSelector } from 'src/app/store/app/user.selector';
 
@@ -13,7 +13,7 @@ import { userSelector } from 'src/app/store/app/user.selector';
 })
 export class SettingsComponent implements OnInit, OnDestroy {
   user$: Observable<UserState> = new Observable<UserState>();
-  tokenInfo: TokenInfo = TokenInfo.invalid();
+  tokenInfo: TokenInfoState = TokenInfoState.invalid();
   panelOpenState = false;
   tokenInfoSub: Subscription = new Subscription();
 

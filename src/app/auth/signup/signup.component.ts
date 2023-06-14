@@ -9,7 +9,7 @@ import {
 import { Router } from '@angular/router';
 import { Observable, Subscription, catchError, map, of } from 'rxjs';
 import { ApiStateService } from 'src/app/shared/application/api/api-state.service';
-import { Account } from 'src/app/shared/application/api/model/account.model';
+import { AccountState } from 'src/app/shared/application/api/model/account.model';
 import { ApiKeyValidationService } from '../../shared/application/api-key-validation.service';
 import { SignupService } from './signup.service';
 
@@ -23,7 +23,7 @@ export class SignupComponent implements OnInit, OnDestroy {
   passwordVisible: boolean = false;
   isLoading: boolean = false;
   error: string = '';
-  account: Account = Account.invalid();
+  account: AccountState = AccountState.invalid();
   apiKeyError: string = '';
 
   //subscriptions to signup service
@@ -82,7 +82,7 @@ export class SignupComponent implements OnInit, OnDestroy {
   }
 
   accountIsValid(): boolean {
-    return Account.isValid(this.account);
+    return AccountState.isValid(this.account);
   }
 
   onTogglePasswordVisibility() {
@@ -101,7 +101,7 @@ export class SignupComponent implements OnInit, OnDestroy {
           catchError((error) => {
             this.apiKeyError =
               error.message === undefined ? error : error.message;
-            this.apiState.account.next(Account.invalid());
+            this.apiState.account.next(AccountState.invalid());
             return of({ apiKeyError: { value: control.value } });
           })
         );

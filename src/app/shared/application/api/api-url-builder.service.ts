@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
+import { Store } from '@ngrx/store';
 import { Observable, map } from 'rxjs';
-import { ApiStateService } from './api-state.service';
+import { apiKeySelector } from 'src/app/store/api/api.selector';
 
 const baseApiUrl = 'https://api.guildwars2.com/v2/';
 
 @Injectable({ providedIn: 'root' })
 export class ApiUrlBuilderService {
-  constructor(private apiState: ApiStateService) {}
+  constructor(private store: Store<{ apiKey: string }>) {}
 
   get account(): Observable<string> {
     return this.constructUrl('account');
@@ -17,9 +18,9 @@ export class ApiUrlBuilderService {
   }
 
   private constructUrl(endpoint: string): Observable<string> {
-    return this.apiState.apiKey.pipe(
-      map((apiKey) => baseApiUrl + endpoint + '?access_token=' + apiKey)
-    );
+    return this.store
+      .select(apiKeySelector)
+      .pipe(map((apiKey) => baseApiUrl + endpoint + '?access_token=' + apiKey));
   }
   // + account: Returns information about an account associated with an API key.
   // account/bank: Returns information about a bank associated with an API key.

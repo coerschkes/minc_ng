@@ -16,6 +16,7 @@ import { environment } from 'src/environments/environment';
 import { ApiStateService } from './api/api-state.service';
 import { Role, roleFromString } from './model/roles.model';
 import { UserState } from './model/user.model';
+import { updateApiKey } from 'src/app/store/api/api.actions';
 
 export interface UserResponseData {
   apiKey: string;
@@ -31,7 +32,7 @@ export class UserService {
     private http: HttpClient,
     private authState: AuthStateService,
     private apiState: ApiStateService,
-    private store: Store<{ user: UserState }>
+    private store: Store
   ) {}
 
   //todo: implement delete methods
@@ -113,7 +114,7 @@ export class UserService {
             user.apiKey !== null &&
             user.apiKey !== undefined
           ) {
-            this.apiState.apiKey.next(user.apiKey);
+            this.store.dispatch(updateApiKey({ apiKey: user.apiKey }));
           }
         })
       );

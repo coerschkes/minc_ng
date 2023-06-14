@@ -1,4 +1,4 @@
-export class Account {
+export class AccountState {
   constructor(
     public id: string,
     public age: number,
@@ -17,16 +17,7 @@ export class Account {
     public build_storage_slots?: number
   ) {}
 
-  toString = (): string => {
-    return (
-      'Account: {$this.name, $this.id, $this.age, $this.world, ' +
-      '$this.guilds, $this.created, $this.access, $this.commander, ' +
-      '$this.last_modified, $this.guild_leader, $this.fractal_level, ' +
-      '$this.daily_ap, $this.monthly_ap, $this.wvw_rank, $this.build_storage_slots}'
-    );
-  };
-
-  static isValid(account: Account): boolean {
+  static isValid(account: AccountState): boolean {
     return (
       account.id !== '' &&
       account.name !== '' &&
@@ -36,7 +27,7 @@ export class Account {
     );
   }
 
-  static invalid(): Account {
-    return new Account('', 0, '', 0, [], '', [], false, '', [], 0, 0, 0, 0, 0);
+  static invalid(): AccountState {
+    return new AccountState('', 0, '', 0, [], '', [], false, '', [], 0, 0, 0, 0, 0);
   }
 }
