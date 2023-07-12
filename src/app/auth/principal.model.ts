@@ -7,6 +7,10 @@ export class Principal {
     public tokenExpirationDate: Date
   ) {}
 
+  static invalid() {
+    return new Principal('', '', '', '', new Date());
+  }
+
   static isValid(principal: Principal): boolean {
     return (
       principal.email != '' &&
@@ -14,9 +18,5 @@ export class Principal {
       principal.token != '' &&
       principal.tokenExpirationDate != null
     );
-  }
-
-  static get invalid() {
-    return new Principal('', '', '', '', new Date());
   }
 }
