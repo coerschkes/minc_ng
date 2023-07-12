@@ -14,6 +14,10 @@ import { HttpErrorHandlerInterceptor } from './shared/application/http-error-han
 import { LoggingInterceptorService } from './shared/application/logging-interceptor.service';
 import { apiKeyReducer } from './store/api/api.reducer';
 import { userReducer } from './store/app/user.reducer';
+import {
+  expirationTimerReducer,
+  refreshTimerReducer,
+} from './store/auth/auth.reducer';
 
 @NgModule({
   declarations: [AppComponent, NotFoundComponent],
@@ -24,7 +28,12 @@ import { userReducer } from './store/app/user.reducer';
     HttpClientModule,
     BrowserAnimationsModule,
     MatSnackBarModule,
-    StoreModule.forRoot({ user: userReducer, apiKey: apiKeyReducer }),
+    StoreModule.forRoot({
+      user: userReducer,
+      apiKey: apiKeyReducer,
+      expirationTimer: expirationTimerReducer,
+      refreshTimer: refreshTimerReducer,
+    }),
   ],
   providers: [
     {

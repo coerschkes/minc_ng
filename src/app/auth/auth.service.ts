@@ -1,10 +1,17 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
 import { map, take, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { NotificationService } from '../shared/application/notification.service';
+import {
+  clearExpirationTimer,
+  clearRefreshTimer,
+  updateExpirationTimer,
+  updateRefreshTimer,
+} from '../store/auth/auth.actions';
 import { AuthStateService } from './auth-state.service';
 import { LocalStorageService } from './local-storage.service';
 import { Principal } from './principal.model';
@@ -48,7 +55,8 @@ export class AuthService implements OnDestroy {
     private router: Router,
     private localStorage: LocalStorageService,
     private notificationService: NotificationService,
-    private authState: AuthStateService
+    private authState: AuthStateService,
+    private anyStore: Store<any>
   ) {
     this.principalSubjectSub = this.authState.principalSubject.subscribe(
       (principal) => {
@@ -86,16 +94,10 @@ export class AuthService implements OnDestroy {
   }
 
   logout() {
-    this.authState.principalSubject.next(Principal.invalid);
+    this.authState.principalSubject.next(Principal.invalid());
     this.localStorage.removeStoredPrincipal();
-    if (this.authState.tokenExpirationTimer) {
-      clearTimeout(this.authState.tokenExpirationTimer);
-    }
-    if (this.authState.tokenRefreshTimer) {
-      clearTimeout(this.authState.tokenRefreshTimer);
-    }
-    this.authState.tokenExpirationTimer = null;
-    this.authState.tokenRefreshTimer = null;
+    this.anyStore.dispatch(clearExpirationTimer());
+    this.anyStore.dispatch(clearRefreshTimer());
     this.router.navigate(['/auth']);
   }
 
@@ -128,13 +130,15 @@ export class AuthService implements OnDestroy {
   }
 
   autoRefresh(principal: Principal) {
-    if (this.authState.tokenRefreshTimer) {
-      clearTimeout(this.authState.tokenRefreshTimer);
-    }
+    this.anyStore.dispatch(clearRefreshTimer());
     const refreshDuration = 600000; //refresh every 10 min
-    this.authState.tokenRefreshTimer = setTimeout(() => {
-      this.refresh(principal);
-    }, refreshDuration);
+    this.anyStore.dispatch(
+      updateRefreshTimer({
+        refreshTimer: setTimeout(() => {
+          this.refresh(principal);
+        }, refreshDuration),
+      })
+    );
   }
 
   autoLogin() {
@@ -151,14 +155,16 @@ export class AuthService implements OnDestroy {
   }
 
   autoLogout(tokenExpirationDate: Date) {
-    if (this.authState.tokenExpirationTimer) {
-      clearTimeout(this.authState.tokenExpirationTimer);
-    }
+    this.anyStore.dispatch(clearExpirationTimer());
     const expirationDuration =
       new Date(tokenExpirationDate).getTime() - new Date().getTime();
-    this.authState.tokenExpirationTimer = setTimeout(() => {
-      this.logout();
-    }, expirationDuration);
+    this.anyStore.dispatch(
+      updateExpirationTimer({
+        expirationTimer: setTimeout(() => {
+          this.logout();
+        }, expirationDuration),
+      })
+    );
   }
 
   isLoggedIn() {
