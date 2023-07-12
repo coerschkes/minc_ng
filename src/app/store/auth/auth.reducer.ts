@@ -1,8 +1,10 @@
 import { createReducer, on } from '@ngrx/store';
+import { Principal } from 'src/app/auth/principal.model';
 import {
   clearExpirationTimer,
   clearRefreshTimer,
   updateExpirationTimer,
+  updatePrincipal,
   updateRefreshTimer,
 } from './auth.actions';
 
@@ -31,4 +33,10 @@ export const refreshTimerReducer = createReducer(
     }
     return (state = initialRefreshTimerState);
   })
+);
+
+const initialPrincipal = Principal.invalid();
+export const principalReducer = createReducer(
+  initialPrincipal,
+  on(updatePrincipal, (state, action) => (state = action.principal))
 );

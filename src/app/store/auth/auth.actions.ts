@@ -1,4 +1,5 @@
 import { createAction, props } from '@ngrx/store';
+import { Principal } from 'src/app/auth/principal.model';
 
 export const updateExpirationTimer = createAction(
   '[Expiration Timer] Update Expiration Timer',
@@ -6,7 +7,7 @@ export const updateExpirationTimer = createAction(
 );
 
 export const clearExpirationTimer = createAction(
-  '[Expiration Timer] Clear Expiration Timer',
+  '[Expiration Timer] Clear Expiration Timer'
 );
 
 export const updateRefreshTimer = createAction(
@@ -15,5 +16,10 @@ export const updateRefreshTimer = createAction(
 );
 
 export const clearRefreshTimer = createAction(
-  '[Refresh Timer] Clear Refresh Timer',
+  '[Refresh Timer] Clear Refresh Timer'
+);
+
+export const updatePrincipal = createAction(
+  '[Principal] Update Principal',
+  props<{ principal: Principal }>()
 );

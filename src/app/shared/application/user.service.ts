@@ -10,9 +10,10 @@ import {
   take,
   tap,
 } from 'rxjs/operators';
-import { AuthStateService } from 'src/app/auth/auth-state.service';
+import { Principal } from 'src/app/auth/principal.model';
 import { updateApiKey } from 'src/app/store/api/api.actions';
 import { updateUser } from 'src/app/store/app/user.actions';
+import { principalSelector } from 'src/app/store/auth/auth.selector';
 import { environment } from 'src/environments/environment';
 import { Role, roleFromString } from './model/roles.model';
 import { UserState } from './model/user.model';
@@ -29,8 +30,7 @@ const dbUrl = environment.firebaseDbUrl;
 export class UserService {
   constructor(
     private http: HttpClient,
-    private authState: AuthStateService,
-    private store: Store
+    private store: Store<{ principal: Principal }>
   ) {}
 
   //todo: implement delete methods
@@ -65,7 +65,7 @@ export class UserService {
   }
 
   saveUser(user: UserState): Observable<UserState> {
-    return this.authState.principalSubject.pipe(
+    return this.store.select(principalSelector).pipe(
       take(1),
       exhaustMap((principal) => {
         return this.http
@@ -97,7 +97,9 @@ export class UserService {
   }
 
   loadUserForPrincipal(): Observable<UserState> {
-    return this.authState.principalSubject
+    //todo: refactor logic cascade
+    return this.store
+      .select(principalSelector)
       .pipe(
         take(1),
         exhaustMap((principal) => {
@@ -125,7 +127,7 @@ export class UserService {
   }
 
   updateUserForPrincipal(user: UserState): Observable<any> {
-    return this.authState.principalSubject.pipe(
+    return this.store.select(principalSelector).pipe(
       take(1),
       exhaustMap((principal) => {
         return this.updateUserById(principal.id, user);

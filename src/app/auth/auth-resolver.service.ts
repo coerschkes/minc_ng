@@ -1,7 +1,4 @@
-import { inject } from '@angular/core';
 import { ResolveFn } from '@angular/router';
-import { UserState } from '../shared/application/model/user.model';
-import { UserService } from '../shared/application/user.service';
 
 export const AuthResolver: ResolveFn<void> = () => {
   //todo: check if useful -> probably not

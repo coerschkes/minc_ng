@@ -16,6 +16,7 @@ import { apiKeyReducer } from './store/api/api.reducer';
 import { userReducer } from './store/app/user.reducer';
 import {
   expirationTimerReducer,
+  principalReducer,
   refreshTimerReducer,
 } from './store/auth/auth.reducer';
 
@@ -33,6 +34,7 @@ import {
       apiKey: apiKeyReducer,
       expirationTimer: expirationTimerReducer,
       refreshTimer: refreshTimerReducer,
+      principal: principalReducer,
     }),
   ],
   providers: [

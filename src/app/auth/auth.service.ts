@@ -10,9 +10,10 @@ import {
   clearExpirationTimer,
   clearRefreshTimer,
   updateExpirationTimer,
+  updatePrincipal,
   updateRefreshTimer,
 } from '../store/auth/auth.actions';
-import { AuthStateService } from './auth-state.service';
+import { principalSelector } from '../store/auth/auth.selector';
 import { LocalStorageService } from './local-storage.service';
 import { Principal } from './principal.model';
 
@@ -55,18 +56,16 @@ export class AuthService implements OnDestroy {
     private router: Router,
     private localStorage: LocalStorageService,
     private notificationService: NotificationService,
-    private authState: AuthStateService,
-    private anyStore: Store<any>
+    private anyStore: Store<any>,
+    private principalStore: Store<{ principal: Principal }>
   ) {
-    this.principalSubjectSub = this.authState.principalSubject.subscribe(
-      (principal) => {
-        if (Principal.isValid(principal)) {
-          this.localStorage.storePrincipal(principal);
-          this.autoLogout(principal.tokenExpirationDate);
-          this.autoRefresh(principal);
-        }
+    this.principalStore.select(principalSelector).subscribe((principal) => {
+      if (Principal.isValid(principal)) {
+        this.localStorage.storePrincipal(principal);
+        this.autoLogout(principal.tokenExpirationDate);
+        this.autoRefresh(principal);
       }
-    );
+    });
   }
 
   ngOnDestroy(): void {
@@ -94,7 +93,9 @@ export class AuthService implements OnDestroy {
   }
 
   logout() {
-    this.authState.principalSubject.next(Principal.invalid());
+    this.principalStore.dispatch(
+      updatePrincipal({ principal: Principal.invalid() })
+    );
     this.localStorage.removeStoredPrincipal();
     this.anyStore.dispatch(clearExpirationTimer());
     this.anyStore.dispatch(clearRefreshTimer());
@@ -102,6 +103,7 @@ export class AuthService implements OnDestroy {
   }
 
   refresh(principal: Principal) {
+    //todo: can i refactor?
     this.http
       .post<RefreshResponseData>(firebaseRefreshUrl, {
         grant_type: 'refresh_token',
@@ -116,7 +118,9 @@ export class AuthService implements OnDestroy {
             resData.id_token,
             this.getExpirationDate(resData.expires_in)
           );
-          this.authState.principalSubject.next(updatedPrincipal);
+          this.principalStore.dispatch(
+            updatePrincipal({ principal: updatedPrincipal })
+          );
         })
       )
       .subscribe({
@@ -148,7 +152,7 @@ export class AuthService implements OnDestroy {
     }
     if (loadedUser.token && loadedUser.tokenExpirationDate > new Date()) {
       this.refresh(loadedUser);
-      this.authState.principalSubject.next(loadedUser);
+      this.principalStore.dispatch(updatePrincipal({ principal: loadedUser }));
     } else {
       this.localStorage.removeStoredPrincipal();
     }
@@ -168,7 +172,7 @@ export class AuthService implements OnDestroy {
   }
 
   isLoggedIn() {
-    return this.authState.principalSubject.pipe(
+    return this.principalStore.select(principalSelector).pipe(
       take(1),
       map((principal) => {
         return Principal.isValid(principal);
@@ -177,14 +181,14 @@ export class AuthService implements OnDestroy {
   }
 
   private handleAuthentication(authResponseData: AuthResponseData) {
-    const user = new Principal(
+    const principal = new Principal(
       authResponseData.email,
       authResponseData.localId,
       authResponseData.refreshToken,
       authResponseData.idToken,
       this.getExpirationDate(authResponseData.expiresIn)
     );
-    this.authState.principalSubject.next(user);
+    this.principalStore.dispatch(updatePrincipal({ principal: principal }));
   }
 
   private getExpirationDate(expiresIn: string) {
