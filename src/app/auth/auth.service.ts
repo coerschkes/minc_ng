@@ -47,6 +47,8 @@ export interface RefreshResponseData {
   project_id: string;
 }
 
+//todo: can i split this class and refactor? maybe use effects/actions?
+
 @Injectable({ providedIn: 'root' })
 export class AuthService implements OnDestroy {
   principalSubjectSub = new Subscription();
