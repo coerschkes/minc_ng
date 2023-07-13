@@ -39,3 +39,7 @@ html, body{
   --mdc-chip-elevated-container-color: #673ab7;
   --mdc-chip-label-text-color: white;
 }
+
+.mat-chip-default-cursor button[matchipaction][role="option"][aria-disabled="false"][type="button"] {
+  cursor: default;
+}

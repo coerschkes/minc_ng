@@ -12,6 +12,7 @@
       >
         <mat-label style="margin-top: 10px">Roles: </mat-label>
         <mat-chip-option
+          class="mat-chip-default-cursor"
           *ngFor="let role of (user$ | async)?.roles"
           [selectable]="false"
           [selected]="false"
