@@ -1,2 +1,2 @@
 <p>dashboard works!</p>
-<p>current user: {{ currentUser.username }}</p>
+<p>current user: {{ (currentUser$ | async)?.username }}</p>

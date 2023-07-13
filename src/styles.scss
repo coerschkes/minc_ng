@@ -34,3 +34,8 @@ html, body{
 .mat-drawer-inner-container{
   margin-right: 32px;
 }
+
+.mat-mdc-standard-chip {
+  --mdc-chip-elevated-container-color: #673ab7;
+  --mdc-chip-label-text-color: white;
+}

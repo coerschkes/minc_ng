@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
-import { AppStateService } from 'src/app/shared/application/app-state.service';
-import { User } from 'src/app/shared/application/model/user.model';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
+import { UserState } from 'src/app/shared/application/model/user.model';
+import { userSelector } from 'src/app/store/app/user.selector';
 
 @Component({
   selector: 'app-dashboard',
@@ -9,14 +10,11 @@ import { User } from 'src/app/shared/application/model/user.model';
   styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent implements OnInit {
-  currentUser: User = User.invalid();
-  sub: Subscription = new Subscription();
+  currentUser$: Observable<UserState> = new Observable<UserState>();
 
-  constructor(private appState: AppStateService) {}
+  constructor(private store: Store<{ user: UserState }>) {}
 
   ngOnInit(): void {
-    this.sub = this.appState.user.subscribe((user) => {
-      this.currentUser = user;
-    });
+    this.currentUser$ = this.store.select(userSelector);
   }
 }

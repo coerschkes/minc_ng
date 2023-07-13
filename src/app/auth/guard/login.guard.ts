@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { map, take } from 'rxjs/operators';
-import { AuthService } from './auth.service';
+import { AuthService } from '../auth.service';
 
 export const LoginGuard: CanActivateFn = () => {
   const router: Router = inject(Router);

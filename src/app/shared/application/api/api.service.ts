@@ -3,8 +3,8 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { ApiUrlBuilderService } from './api-url-builder.service';
-import { Account } from './model/account.model';
-import { TokenInfo } from './model/tokeninfo.model';
+import { AccountState } from './model/account.model';
+import { TokenInfoState } from './model/tokeninfo.model';
 
 @Injectable({
   providedIn: 'root',
@@ -12,11 +12,11 @@ import { TokenInfo } from './model/tokeninfo.model';
 export class ApiService {
   constructor(private url: ApiUrlBuilderService, private http: HttpClient) {}
 
-  get account(): Observable<Account> {
+  get account(): Observable<AccountState> {
     return this.url.account.pipe(
       switchMap((url) =>
-        this.http.get<Account>(url).pipe(
-          map((response: Account) => {
+        this.http.get<AccountState>(url).pipe(
+          map((response: AccountState) => {
             return response;
           })
         )
@@ -24,11 +24,11 @@ export class ApiService {
     );
   }
 
-  get tokenInfo(): Observable<TokenInfo> {
+  get tokenInfo(): Observable<TokenInfoState> {
     return this.url.tokenInfo.pipe(
       switchMap((url) =>
-        this.http.get<TokenInfo>(url).pipe(
-          map((response: TokenInfo) => {
+        this.http.get<TokenInfoState>(url).pipe(
+          map((response: TokenInfoState) => {
             return response;
           })
         )

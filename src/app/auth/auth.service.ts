@@ -1,68 +1,43 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
-import { map, take, tap } from 'rxjs/operators';
-import { environment } from '../../environments/environment';
+import { Store } from '@ngrx/store';
+import { map, tap } from 'rxjs/operators';
 import { NotificationService } from '../shared/application/notification.service';
-import { AuthStateService } from './auth-state.service';
+import {
+  clearExpirationTimer,
+  clearRefreshTimer,
+  updateExpirationTimer,
+  updatePrincipal,
+  updateRefreshTimer,
+} from '../store/auth/auth.actions';
+import {
+  principalSelector,
+  principalValidSelector,
+} from '../store/auth/auth.selector';
+import {
+  AuthResponseData,
+  RefreshResponseData,
+  firebaseLoginUrl,
+  firebaseRefreshUrl,
+  firebaseSignupUrl,
+} from './model/auth-communication.model';
 import { LocalStorageService } from './local-storage.service';
-import { Principal } from './principal.model';
-
-const firebaseSignupUrl =
-  'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=' +
-  environment.firebaseApiKey;
-const firebaseLoginUrl =
-  'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=' +
-  environment.firebaseApiKey;
-
-const firebaseRefreshUrl =
-  'https://securetoken.googleapis.com/v1/token?key=' +
-  environment.firebaseApiKey;
-
-export interface AuthResponseData {
-  kind: string;
-  idToken: string;
-  email: string;
-  refreshToken: string;
-  expiresIn: string;
-  localId: string;
-  registered?: boolean;
-}
-
-export interface RefreshResponseData {
-  expires_in: string;
-  token_type: string;
-  refresh_token: string;
-  id_token: string;
-  user_id: string;
-  project_id: string;
-}
+import { PrincipalMapperService } from './principal-mapper.service';
+import { Principal } from './model/principal.model';
 
 @Injectable({ providedIn: 'root' })
-export class AuthService implements OnDestroy {
-  principalSubjectSub = new Subscription();
-
+export class AuthService {
   constructor(
     private http: HttpClient,
     private router: Router,
     private localStorage: LocalStorageService,
     private notificationService: NotificationService,
-    private authState: AuthStateService
+    private principalMapper: PrincipalMapperService,
+    private anyStore: Store<any>,
+    private principalStore: Store<{ principal: Principal }>
   ) {
-    this.principalSubjectSub = this.authState.principalSubject.subscribe(
-      (principal) => {
-        if (Principal.isValid(principal)) {
-          this.localStorage.storePrincipal(principal);
-          this.autoLogout(principal.tokenExpirationDate);
-          this.autoRefresh(principal);
-        }
-      }
-    );
-  }
-
-  ngOnDestroy(): void {
-    this.principalSubjectSub.unsubscribe();
+    this.initPrincipal();
   }
 
   signup(email: string, password: string) {
@@ -86,35 +61,28 @@ export class AuthService implements OnDestroy {
   }
 
   logout() {
-    this.authState.principalSubject.next(Principal.invalid);
+    this.principalStore.dispatch(
+      updatePrincipal({ principal: Principal.invalid() })
+    );
     this.localStorage.removeStoredPrincipal();
-    if (this.authState.tokenExpirationTimer) {
-      clearTimeout(this.authState.tokenExpirationTimer);
-    }
-    if (this.authState.tokenRefreshTimer) {
-      clearTimeout(this.authState.tokenRefreshTimer);
-    }
-    this.authState.tokenExpirationTimer = null;
-    this.authState.tokenRefreshTimer = null;
+    this.anyStore.dispatch(clearExpirationTimer());
+    this.anyStore.dispatch(clearRefreshTimer());
     this.router.navigate(['/auth']);
   }
 
-  refresh(principal: Principal) {
+  refreshToken(principal: Principal) {
     this.http
       .post<RefreshResponseData>(firebaseRefreshUrl, {
         grant_type: 'refresh_token',
         refresh_token: principal.refreshToken,
       })
       .pipe(
-        map((resData) => {
-          const updatedPrincipal = new Principal(
-            principal.email,
-            principal.id,
-            resData.refresh_token,
-            resData.id_token,
-            this.getExpirationDate(resData.expires_in)
+        map((refreshData) => {
+          const updatedPrincipal = this.principalMapper.mapRefreshToPrincipal(
+            principal,
+            refreshData
           );
-          this.authState.principalSubject.next(updatedPrincipal);
+          this.updatePrincipal(updatedPrincipal);
         })
       )
       .subscribe({
@@ -127,14 +95,16 @@ export class AuthService implements OnDestroy {
       });
   }
 
-  autoRefresh(principal: Principal) {
-    if (this.authState.tokenRefreshTimer) {
-      clearTimeout(this.authState.tokenRefreshTimer);
-    }
+  autoRefreshToken(principal: Principal) {
+    this.anyStore.dispatch(clearRefreshTimer());
     const refreshDuration = 600000; //refresh every 10 min
-    this.authState.tokenRefreshTimer = setTimeout(() => {
-      this.refresh(principal);
-    }, refreshDuration);
+    this.anyStore.dispatch(
+      updateRefreshTimer({
+        refreshTimer: setTimeout(() => {
+          this.refreshToken(principal);
+        }, refreshDuration),
+      })
+    );
   }
 
   autoLogin() {
@@ -143,45 +113,46 @@ export class AuthService implements OnDestroy {
       return;
     }
     if (loadedUser.token && loadedUser.tokenExpirationDate > new Date()) {
-      this.refresh(loadedUser);
-      this.authState.principalSubject.next(loadedUser);
+      this.refreshToken(loadedUser);
+      this.principalStore.dispatch(updatePrincipal({ principal: loadedUser }));
     } else {
       this.localStorage.removeStoredPrincipal();
     }
   }
 
   autoLogout(tokenExpirationDate: Date) {
-    if (this.authState.tokenExpirationTimer) {
-      clearTimeout(this.authState.tokenExpirationTimer);
-    }
+    this.anyStore.dispatch(clearExpirationTimer());
     const expirationDuration =
       new Date(tokenExpirationDate).getTime() - new Date().getTime();
-    this.authState.tokenExpirationTimer = setTimeout(() => {
-      this.logout();
-    }, expirationDuration);
-  }
-
-  isLoggedIn() {
-    return this.authState.principalSubject.pipe(
-      take(1),
-      map((principal) => {
-        return Principal.isValid(principal);
+    this.anyStore.dispatch(
+      updateExpirationTimer({
+        expirationTimer: setTimeout(() => {
+          this.logout();
+        }, expirationDuration),
       })
     );
   }
 
-  private handleAuthentication(authResponseData: AuthResponseData) {
-    const user = new Principal(
-      authResponseData.email,
-      authResponseData.localId,
-      authResponseData.refreshToken,
-      authResponseData.idToken,
-      this.getExpirationDate(authResponseData.expiresIn)
-    );
-    this.authState.principalSubject.next(user);
+  isLoggedIn() {
+    return this.principalStore.select(principalValidSelector);
   }
 
-  private getExpirationDate(expiresIn: string) {
-    return new Date(new Date().getTime() + +expiresIn * 1000);
+  private handleAuthentication(authRes: AuthResponseData) {
+    const principal = this.principalMapper.mapAuthResToPrincipal(authRes);
+    this.updatePrincipal(principal);
+  }
+
+  private updatePrincipal(principal: Principal) {
+    this.principalStore.dispatch(updatePrincipal({ principal: principal }));
+  }
+
+  private initPrincipal() {
+    this.principalStore.select(principalSelector).subscribe((principal) => {
+      if (Principal.isValid(principal)) {
+        this.localStorage.storePrincipal(principal);
+        this.autoLogout(principal.tokenExpirationDate);
+        this.autoRefreshToken(principal);
+      }
+    });
   }
 }

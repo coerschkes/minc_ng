@@ -1,39 +1,29 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
-import { ApiStateService } from 'src/app/shared/application/api/api-state.service';
-import { TokenInfo } from 'src/app/shared/application/api/model/tokeninfo.model';
-import { AppStateService } from 'src/app/shared/application/app-state.service';
-import { User } from 'src/app/shared/application/model/user.model';
+import { Component, OnInit } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
+import { TokenInfoState } from 'src/app/shared/application/api/model/tokeninfo.model';
+import { UserState } from 'src/app/shared/application/model/user.model';
+import { tokenInfoSelector } from 'src/app/store/api/api.selector';
+import { userSelector } from 'src/app/store/app/user.selector';
 
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss'],
 })
-export class SettingsComponent implements OnInit, OnDestroy {
-  user: User = User.invalid();
-  tokenInfo: TokenInfo = TokenInfo.invalid();
+export class SettingsComponent implements OnInit {
+  user$: Observable<UserState> = new Observable<UserState>();
+  tokenInfo$: Observable<TokenInfoState> = new Observable<TokenInfoState>();
   panelOpenState = false;
-  userSub: Subscription = new Subscription();
-  tokenInfoSub: Subscription = new Subscription();
 
   constructor(
-    private appState: AppStateService,
-    private apiState: ApiStateService
+    private userStore: Store<{ user: UserState }>,
+    private tokenInfoStore: Store<{ tokenInfo: TokenInfoState }>
   ) {}
 
   ngOnInit(): void {
-    this.tokenInfoSub = this.apiState.tokenInfo.subscribe((tokenInfo) => {
-      this.tokenInfo = tokenInfo;
-    });
-    this.userSub = this.appState.user.subscribe((user) => {
-      this.user = user;
-    });
-  }
-
-  ngOnDestroy(): void {
-    this.userSub.unsubscribe();
-    this.tokenInfoSub.unsubscribe();
+    this.user$ = this.userStore.select(userSelector);
+    this.tokenInfo$ = this.tokenInfoStore.select(tokenInfoSelector);
   }
 
   concatenateStringArray(array: string[]): string {

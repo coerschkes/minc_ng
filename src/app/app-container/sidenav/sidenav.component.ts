@@ -1,9 +1,10 @@
 import { MediaMatcher } from '@angular/cdk/layout';
 import { ChangeDetectorRef, Component } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { Observable, Subscription, map } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
-import { AppStateService } from 'src/app/shared/application/app-state.service';
-import { User } from 'src/app/shared/application/model/user.model';
+import { UserState } from 'src/app/shared/application/model/user.model';
+import { userSelector } from 'src/app/store/app/user.selector';
 
 @Component({
   selector: 'app-sidenav',
@@ -12,7 +13,7 @@ import { User } from 'src/app/shared/application/model/user.model';
 })
 export class SidenavComponent {
   mobileQuery: MediaQueryList;
-  currentUser: User = User.invalid();
+  currentUsername$: Observable<string> = new Observable<string>();
   sub: Subscription = new Subscription();
 
   private _mobileQueryListener: () => void;
@@ -21,7 +22,7 @@ export class SidenavComponent {
     changeDetectorRef: ChangeDetectorRef,
     media: MediaMatcher,
     private authService: AuthService,
-    private appState: AppStateService
+    private store: Store<{ user: UserState }>
   ) {
     this.mobileQuery = media.matchMedia('(max-width: 600px)');
     this._mobileQueryListener = () => changeDetectorRef.detectChanges();
@@ -29,9 +30,9 @@ export class SidenavComponent {
   }
 
   ngOnInit(): void {
-    this.sub = this.appState.user.subscribe((user) => {
-      this.currentUser = user;
-    });
+    this.currentUsername$ = this.store
+      .select(userSelector)
+      .pipe(map((user) => user.username));
   }
 
   ngOnDestroy(): void {

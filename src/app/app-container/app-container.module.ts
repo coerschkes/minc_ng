@@ -17,6 +17,8 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatCardModule } from '@angular/material/card';
 import { SettingsComponent } from './settings/settings.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import {MatChipsModule} from '@angular/material/chips';
+import {MatGridListModule} from '@angular/material/grid-list';
 
 @NgModule({
   declarations: [
@@ -39,7 +41,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     MatTooltipModule,
     MatExpansionModule,
     MatCardModule,
-    MatFormFieldModule
+    MatFormFieldModule,
+    MatChipsModule,
+    MatGridListModule
   ],
 })
 export class AppContainerModule {}

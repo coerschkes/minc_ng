@@ -10,8 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { RouterModule, Routes } from '@angular/router';
-import { AuthResolver } from './auth-resolver.service';
-import { AuthGuard } from './auth.guard';
+import { AuthGuard } from './guard/auth.guard';
 import { LoginComponent } from './login/login.component';
 import { SignupComponent } from './signup/signup.component';
 
@@ -19,7 +18,6 @@ const routes: Routes = [
   {
     path: '',
     canActivate: [AuthGuard],
-    resolve: [AuthResolver],
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'login' },
       {

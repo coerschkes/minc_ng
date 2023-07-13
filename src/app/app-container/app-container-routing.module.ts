@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { LoginGuard } from '../auth/login.guard';
 import { UserResolver } from '../shared/application/user-resolver.service';
 import { AppContainerComponent } from './app-container.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { PlannerComponent } from './planner/planner.component';
 import { SettingsComponent } from './settings/settings.component';
+import { LoginGuard } from '../auth/guard/login.guard';
 
 const routes: Routes = [
   {

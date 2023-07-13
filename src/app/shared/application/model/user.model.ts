@@ -1,26 +1,22 @@
 import { Role } from './roles.model';
 
-export class User {
+export class UserState {
   constructor(
     public apiKey: string,
     public username: string,
-    private _roles: Role[]
+    public roles: Role[]
   ) {}
 
-  get roles(): Role[] {
-    {
-      return this._roles.slice();
-    }
+  static invalid(): UserState {
+    return new UserState('', '', []);
   }
 
-  static invalid(): User {
-    return new User('', '', []);
-  }
-
-  static isValid(user: User): boolean {
+  static isValid(user: UserState): boolean {
     return (
       user.apiKey !== '' &&
       user.username !== '' &&
+      user.roles !== null &&
+      user.roles !== undefined &&
       user.roles.length !== null &&
       user.roles.length !== 0
     );
