@@ -29,7 +29,7 @@ export class SignupService {
     private accountStore: Store<{ account: AccountState }>
   ) {}
 
-  //has to be called after api-key-validation. Depends on apiState.account and apiState.apiKey
+  //has to be called after api-key-validation. Depends on account and apiKey
   signup(email: string, password: string): Observable<any> {
     this.isLoading.next(true);
     return forkJoin({

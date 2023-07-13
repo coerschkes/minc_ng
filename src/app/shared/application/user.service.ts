@@ -10,7 +10,7 @@ import {
   take,
   tap,
 } from 'rxjs/operators';
-import { Principal } from 'src/app/auth/principal.model';
+import { Principal } from 'src/app/auth/model/principal.model';
 import { updateApiKey } from 'src/app/store/api/api.actions';
 import { updateUser } from 'src/app/store/app/user.actions';
 import { principalSelector } from 'src/app/store/auth/auth.selector';

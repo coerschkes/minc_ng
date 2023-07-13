@@ -1,29 +1,21 @@
 import { Injectable } from '@angular/core';
-import { Principal } from './principal.model';
+import { PrincipalMapperService } from './principal-mapper.service';
+import { Principal } from './model/principal.model';
+import { PrincipalData } from './model/auth-communication.model';
 
-interface PrincipalData {
-  email: string;
-  id: string;
-  refreshToken: string;
-  token: string;
-  tokenExpirationDate: string;
-}
+const principalStorageKey = 'principal';
 
 @Injectable({ providedIn: 'root' })
 export class LocalStorageService {
+  constructor(private principalMapper: PrincipalMapperService) {}
+
   storePrincipal(principal: Principal) {
-    const data = <PrincipalData>{
-      email: principal.email,
-      id: principal.id,
-      refreshToken: principal.refreshToken,
-      token: principal.token,
-      tokenExpirationDate: principal.tokenExpirationDate.toString(),
-    };
-    localStorage.setItem('principal', JSON.stringify(data));
+    const data = this.principalMapper.mapPrincipalToPrincipalData(principal);
+    localStorage.setItem(principalStorageKey, JSON.stringify(data));
   }
 
   removeStoredPrincipal() {
-    localStorage.removeItem('principal');
+    localStorage.removeItem(principalStorageKey);
   }
 
   getStoredPrincipal(): Principal | null {
@@ -31,18 +23,12 @@ export class LocalStorageService {
     if (!principalData) {
       return null;
     } else {
-      return new Principal(
-        principalData.email,
-        principalData.id,
-        principalData.refreshToken,
-        principalData.token,
-        new Date(principalData.tokenExpirationDate)
-      );
+      return this.principalMapper.mapPrincipalDataToPrincipal(principalData);
     }
   }
 
   private loadPrincipalData(): PrincipalData | null {
-    const loadedPrincipalData = localStorage.getItem('principal');
+    const loadedPrincipalData = localStorage.getItem(principalStorageKey);
     if (!loadedPrincipalData) {
       return null;
     } else {

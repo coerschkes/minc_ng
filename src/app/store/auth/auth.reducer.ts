@@ -1,5 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
-import { Principal } from 'src/app/auth/principal.model';
+import { Principal } from 'src/app/auth/model/principal.model';
 import {
   clearExpirationTimer,
   clearRefreshTimer,

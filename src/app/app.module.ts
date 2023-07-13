@@ -8,7 +8,7 @@ import { StoreModule } from '@ngrx/store';
 import { AppContainerModule } from './app-container/app-container.module';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { AuthInterceptorService } from './auth/auth-interceptor.service';
+import { AuthParamInterceptorService } from './auth/auth-interceptor.service';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { HttpErrorHandlerInterceptor } from './shared/application/http-error-handler-interceptor.service';
 import { LoggingInterceptorService } from './shared/application/logging-interceptor.service';
@@ -45,7 +45,7 @@ import {
     },
     {
       provide: HTTP_INTERCEPTORS,
-      useClass: AuthInterceptorService,
+      useClass: AuthParamInterceptorService,
       multi: true,
     },
     {

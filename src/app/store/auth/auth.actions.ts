@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { Principal } from 'src/app/auth/principal.model';
+import { Principal } from 'src/app/auth/model/principal.model';
 
 export const updateExpirationTimer = createAction(
   '[Expiration Timer] Update Expiration Timer',

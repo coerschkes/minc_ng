@@ -8,10 +8,10 @@ import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, exhaustMap, take } from 'rxjs';
 import { principalSelector } from '../store/auth/auth.selector';
-import { Principal } from './principal.model';
+import { Principal } from './model/principal.model';
 
 @Injectable()
-export class AuthInterceptorService implements HttpInterceptor {
+export class AuthParamInterceptorService implements HttpInterceptor {
   constructor(private store: Store<{ principal: Principal }>) {}
 
   intercept(
@@ -24,12 +24,19 @@ export class AuthInterceptorService implements HttpInterceptor {
         if (!principal || !principal.token) {
           return next.handle(req);
         } else {
-          const modifiedReq = req.clone({
-            params: req.params.set('auth', principal.token),
-          });
+          const modifiedReq = this.updateRequestWithToken(req, principal);
           return next.handle(modifiedReq);
         }
       })
     );
+  }
+
+  private updateRequestWithToken(
+    req: HttpRequest<any>,
+    principal: Principal
+  ): HttpRequest<any> {
+    return req.clone({
+      params: req.params.set('auth', principal.token),
+    });
   }
 }
