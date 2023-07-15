@@ -1,16 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
-  AbstractControl,
-  AsyncValidatorFn,
   FormControl,
   FormGroup,
-  Validators,
+  Validators
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { Observable, Subscription, catchError, map, of } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { AccountState } from 'src/app/shared/application/api/model/account.model';
-import { updateAccount } from 'src/app/store/api/api.actions';
 import { accountSelector } from 'src/app/store/api/api.selector';
 import { ApiKeyValidationService } from '../../shared/application/api-key-validation.service';
 import { SignupService } from './signup.service';
@@ -26,12 +23,13 @@ export class SignupComponent implements OnInit, OnDestroy {
   isLoading: boolean = false;
   error: string = '';
   account: AccountState = AccountState.invalid();
-  apiKeyError: string = '';
+  validationError: string = '';
 
-  //subscriptions to signup service
+  //subscriptions
   isSignupLoadingSub: Subscription = new Subscription();
   isApiKeyLoadingSub: Subscription = new Subscription();
   accountSub: Subscription = new Subscription();
+  validationErrorSub: Subscription = new Subscription();
 
   constructor(
     private apiKeyService: ApiKeyValidationService,
@@ -56,6 +54,9 @@ export class SignupComponent implements OnInit, OnDestroy {
         this.isLoading = isLoading;
       }
     );
+    this.validationErrorSub = this.apiKeyService.validationError.subscribe(
+      (validationError) => (this.validationError = validationError)
+    );
     this.initForm();
   }
 
@@ -63,6 +64,7 @@ export class SignupComponent implements OnInit, OnDestroy {
     this.isSignupLoadingSub.unsubscribe();
     this.accountSub.unsubscribe();
     this.isApiKeyLoadingSub.unsubscribe();
+    this.validationErrorSub.unsubscribe();
   }
 
   onSubmit() {
@@ -93,30 +95,6 @@ export class SignupComponent implements OnInit, OnDestroy {
     this.passwordVisible = !this.passwordVisible;
   }
 
-  private apiKeyValidator(): AsyncValidatorFn {
-    return (control: AbstractControl): Observable<any> => {
-      const apiKey = control.value;
-      if (apiKey !== null && apiKey !== undefined && apiKey !== '') {
-        return this.apiKeyService.validateApiKey(apiKey).pipe(
-          map(() => {
-            this.apiKeyError = '';
-            return null;
-          }),
-          catchError((error) => {
-            this.apiKeyError =
-              error.message === undefined ? error : error.message;
-            this.store.dispatch(
-              updateAccount({ account: AccountState.invalid() })
-            );
-            return of({ apiKeyError: { value: control.value } });
-          })
-        );
-      } else {
-        return of({ apiKeyError: { value: control.value } });
-      }
-    };
-  }
-
   private initForm() {
     this.authForm = new FormGroup({
       apiKey: new FormControl(
@@ -127,7 +105,7 @@ export class SignupComponent implements OnInit, OnDestroy {
             '([0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}){2}'
           ),
         ],
-        this.apiKeyValidator().bind(this)
+        this.apiKeyService.validator
       ),
       email: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', [
