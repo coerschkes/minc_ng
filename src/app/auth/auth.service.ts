@@ -3,7 +3,9 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { map, tap } from 'rxjs/operators';
+import { AccountState } from '../shared/application/api/model/account.model';
 import { NotificationService } from '../shared/application/notification.service';
+import { updateAccount } from '../store/api/api.actions';
 import {
   clearExpirationTimer,
   clearRefreshTimer,
@@ -15,6 +17,7 @@ import {
   principalSelector,
   principalValidSelector,
 } from '../store/auth/auth.selector';
+import { LocalStorageService } from './local-storage.service';
 import {
   AuthResponseData,
   RefreshResponseData,
@@ -22,9 +25,8 @@ import {
   firebaseRefreshUrl,
   firebaseSignupUrl,
 } from './model/auth-communication.model';
-import { LocalStorageService } from './local-storage.service';
-import { PrincipalMapperService } from './principal-mapper.service';
 import { Principal } from './model/principal.model';
+import { PrincipalMapperService } from './principal-mapper.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -35,7 +37,8 @@ export class AuthService {
     private notificationService: NotificationService,
     private principalMapper: PrincipalMapperService,
     private anyStore: Store<any>,
-    private principalStore: Store<{ principal: Principal }>
+    private principalStore: Store<{ principal: Principal }>,
+    private accountStore: Store<{ account: AccountState }>
   ) {
     this.initPrincipal();
   }
@@ -67,6 +70,9 @@ export class AuthService {
     this.localStorage.removeStoredPrincipal();
     this.anyStore.dispatch(clearExpirationTimer());
     this.anyStore.dispatch(clearRefreshTimer());
+    this.accountStore.dispatch(
+      updateAccount({ account: AccountState.invalid() })
+    );
     this.router.navigate(['/auth']);
   }
 

@@ -7,7 +7,7 @@
       <mat-form-field class="full-width-input">
         <mat-label>API-Key</mat-label>
         <input matInput type="text" formControlName="apiKey" />
-        <mat-icon *ngIf="accountIsValid()" matSuffix color="primary"
+        <mat-icon *ngIf="(accountValid$ | async)" matSuffix color="primary"
           >accessible_forward</mat-icon
         >
         <mat-error>
@@ -47,7 +47,7 @@
         type="submit"
         mat-raised-button
         color="primary"
-        [disabled]="!accountIsValid() || !authForm.valid"
+        [disabled]="! (accountValid$ | async)||!authForm.valid"
       >
         Create Account
       </button>

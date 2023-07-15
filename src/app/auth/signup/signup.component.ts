@@ -1,14 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import {
-  FormControl,
-  FormGroup,
-  Validators
-} from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { AccountState } from 'src/app/shared/application/api/model/account.model';
-import { accountSelector } from 'src/app/store/api/api.selector';
+import {
+  accountSelector,
+  accountValidSelector,
+} from 'src/app/store/api/api.selector';
 import { ApiKeyValidationService } from '../../shared/application/api-key-validation.service';
 import { SignupService } from './signup.service';
 
@@ -18,6 +17,7 @@ import { SignupService } from './signup.service';
   styleUrls: ['./signup.component.css'],
 })
 export class SignupComponent implements OnInit, OnDestroy {
+  accountValid$: Observable<boolean> = new Observable<boolean>();
   authForm: FormGroup = new FormGroup({});
   passwordVisible: boolean = false;
   isLoading: boolean = false;
@@ -39,6 +39,7 @@ export class SignupComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.accountValid$ = this.store.select(accountValidSelector);
     this.isSignupLoadingSub = this.signupService.isLoading.subscribe(
       (isLoading) => {
         this.isLoading = isLoading;
@@ -67,8 +68,8 @@ export class SignupComponent implements OnInit, OnDestroy {
     this.validationErrorSub.unsubscribe();
   }
 
-  onSubmit() {
-    if (this.authForm.valid && this.accountIsValid()) {
+  async onSubmit() {
+    if (this.authForm.valid && this.accountValid$) {
       const email = this.authForm.value.email;
       const password = this.authForm.value.password;
       this.signupService.signup(email, password).subscribe({
@@ -85,10 +86,6 @@ export class SignupComponent implements OnInit, OnDestroy {
     } else {
       return;
     }
-  }
-
-  accountIsValid(): boolean {
-    return AccountState.isValid(this.account);
   }
 
   onTogglePasswordVisibility() {

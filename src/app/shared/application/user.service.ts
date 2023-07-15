@@ -21,7 +21,7 @@ import { UserState } from './model/user.model';
 export interface UserResponseData {
   apiKey: string;
   username: string;
-  _roles: string[];
+  roles: string[];
 }
 
 const dbUrl = environment.firebaseDbUrl;
@@ -83,7 +83,7 @@ export class UserService {
           return new UserState(
             userResponseData.apiKey,
             userResponseData.username,
-            this.toRoles(userResponseData._roles)
+            this.toRoles(userResponseData.roles)
           );
         }),
         catchError(this.handleError.bind(this))
