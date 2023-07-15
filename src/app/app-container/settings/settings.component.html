@@ -5,7 +5,7 @@
       ><h3 style="font-weight: normal">Account</h3></mat-card-header
     >
     <mat-card-content>
-      <p>Username: {{ (user$ | async)?.username }}</p>
+      <p>Account name: {{ (user$ | async)?.username }}</p>
       <mat-divider></mat-divider>
       <mat-chip-listbox
         style="margin-left: 8px; margin-top: 8px; margin-bottom: 8px"
@@ -42,6 +42,7 @@
           class="full-width-input"
           style="width: 100%"
           type="text"
+          value="{{apiKey$ | async}}"
         />
         <mat-chip-listbox
           style="margin-left: 8px; margin-top: 8px; margin-bottom: 8px"
