@@ -16,7 +16,7 @@ import { updateAccount, updateApiKey } from 'src/app/store/api/api.actions';
 import { environment } from 'src/environments/environment';
 import { AccountState } from './api/model/account.model';
 
-const heimGuildId = environment.heimGuildId;
+const guildId = environment.guildId;
 
 @Injectable({ providedIn: 'root' })
 export class ApiKeyValidationService {
@@ -59,7 +59,7 @@ export class ApiKeyValidationService {
     this.isLoading.next(true);
     return this.api.account.pipe(
       switchMap((account) => {
-        if (account.guilds.includes(heimGuildId)) {
+        if (account.guilds.includes(guildId)) {
           return this.user.loadUsernames().pipe(
             map((resData) => {
               if (resData !== null && !resData.includes(account.name)) {
