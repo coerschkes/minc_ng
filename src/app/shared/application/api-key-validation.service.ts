@@ -6,9 +6,10 @@ import {
   Observable,
   catchError,
   finalize,
+  first,
   map,
   of,
-  switchMap,
+  switchMap
 } from 'rxjs';
 import { ApiService } from 'src/app/shared/application/api/api.service';
 import { UserService } from 'src/app/shared/application/user.service';
@@ -47,7 +48,7 @@ export class ApiKeyValidationService {
             );
             return of({ apiKeyError: { value: control.value } });
           })
-        );
+        ).pipe(first());
       } else {
         return of({ apiKeyError: { value: control.value } });
       }
