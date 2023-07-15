@@ -4,6 +4,7 @@ import { Subscription, forkJoin, tap } from 'rxjs';
 import { AuthService } from './auth/auth.service';
 import { ApiService } from './shared/application/api/api.service';
 import { AccountState } from './shared/application/api/model/account.model';
+import { TokenInfoState } from './shared/application/api/model/tokeninfo.model';
 import { updateAccount, updateTokenInfo } from './store/api/api.actions';
 import { apiKeySelector } from './store/api/api.selector';
 
@@ -20,7 +21,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private api: ApiService,
     private apiKeyStore: Store<{ apiKey: string }>,
-    private accountStore: Store<{ account: AccountState }>
+    private accountStore: Store<{ account: AccountState }>,
+    private tokenInfoStore: Store<{ tokenInfo: TokenInfoState }>
   ) {}
 
   ngOnInit(): void {
@@ -44,7 +46,7 @@ export class AppComponent implements OnInit, OnDestroy {
             ),
             tokenInfo: this.api.tokenInfo.pipe(
               tap((resData) =>
-                this.accountStore.dispatch(
+                this.tokenInfoStore.dispatch(
                   updateTokenInfo({ tokenInfo: resData })
                 )
               )

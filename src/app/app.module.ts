@@ -12,7 +12,7 @@ import { AuthParamInterceptorService } from './auth/auth-interceptor.service';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { HttpErrorHandlerInterceptor } from './shared/application/http-error-handler-interceptor.service';
 import { LoggingInterceptorService } from './shared/application/logging-interceptor.service';
-import { apiKeyReducer } from './store/api/api.reducer';
+import { apiKeyReducer, tokenInfoReducer } from './store/api/api.reducer';
 import { userReducer } from './store/app/user.reducer';
 import {
   expirationTimerReducer,
@@ -32,6 +32,7 @@ import {
     StoreModule.forRoot({
       user: userReducer,
       apiKey: apiKeyReducer,
+      tokenInfo: tokenInfoReducer,
       expirationTimer: expirationTimerReducer,
       refreshTimer: refreshTimerReducer,
       principal: principalReducer,
