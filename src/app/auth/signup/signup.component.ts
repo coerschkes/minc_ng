@@ -102,7 +102,7 @@ export class SignupComponent implements OnInit, OnDestroy {
             '([0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}){2}'
           ),
         ],
-        this.apiKeyService.validator
+        this.apiKeyService.signupValidator
       ),
       email: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', [

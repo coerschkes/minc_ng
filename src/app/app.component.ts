@@ -39,18 +39,24 @@ export class AppComponent implements OnInit, OnDestroy {
           //preload account and tokenInfo if apiKey is set
           this.currentApiKey = apiKey;
           forkJoin({
-            account: this.api.account.pipe(
-              tap((resData) =>
-                this.accountStore.dispatch(updateAccount({ account: resData }))
-              )
-            ),
-            tokenInfo: this.api.tokenInfo.pipe(
-              tap((resData) =>
-                this.tokenInfoStore.dispatch(
-                  updateTokenInfo({ tokenInfo: resData })
+            account: this.api
+              .account(apiKey)
+              .pipe(
+                tap((resData) =>
+                  this.accountStore.dispatch(
+                    updateAccount({ account: resData })
+                  )
                 )
-              )
-            ),
+              ),
+            tokenInfo: this.api
+              .tokenInfo(apiKey)
+              .pipe(
+                tap((resData) =>
+                  this.tokenInfoStore.dispatch(
+                    updateTokenInfo({ tokenInfo: resData })
+                  )
+                )
+              ),
           }).subscribe();
         }
       });

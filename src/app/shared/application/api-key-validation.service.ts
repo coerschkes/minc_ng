@@ -9,7 +9,7 @@ import {
   first,
   map,
   of,
-  switchMap
+  switchMap,
 } from 'rxjs';
 import { ApiService } from 'src/app/shared/application/api/api.service';
 import { UserService } from 'src/app/shared/application/user.service';
@@ -27,44 +27,61 @@ export class ApiKeyValidationService {
   constructor(
     private api: ApiService,
     private user: UserService,
-    private store: Store
+    private accountStore: Store<{ account: AccountState }>,
+    private apiKeyStore: Store<string>
   ) {}
 
-  get validator(): AsyncValidatorFn {
+  get signupValidator(): AsyncValidatorFn {
+    return this.validator(this.validateSignupApiKey.bind(this));
+  }
+
+  private validator(
+    validationFn: (apiKey: string) => Observable<any>
+  ): AsyncValidatorFn {
     return (control: AbstractControl): Observable<any> => {
       const apiKey = control.value;
       if (apiKey !== null && apiKey !== undefined && apiKey !== '') {
-        return this.validateApiKey(apiKey).pipe(
-          map(() => {
-            this.validationError.next('');
-            return null;
-          }),
-          catchError((error) => {
-            this.validationError.next(
-              error.message === undefined ? error : error.message
-            );
-            this.store.dispatch(
-              updateAccount({ account: AccountState.invalid() })
-            );
-            return of({ apiKeyError: { value: control.value } });
-          })
-        ).pipe(first());
+        return this.handleValidationError(control, validationFn(apiKey));
       } else {
         return of({ apiKeyError: { value: control.value } });
       }
     };
   }
 
-  private validateApiKey(apiKey: string): Observable<any> {
-    this.store.dispatch(updateApiKey({ apiKey }));
+  private handleValidationError(
+    control: AbstractControl,
+    obs: Observable<any>
+  ): Observable<any> {
+    return obs
+      .pipe(
+        map(() => {
+          this.validationError.next('');
+          return null;
+        }),
+        catchError((error) => {
+          this.validationError.next(
+            error.message === undefined ? error : error.message
+          );
+          this.accountStore.dispatch(
+            updateAccount({ account: AccountState.invalid() })
+          );
+          return of({ apiKeyError: { value: control.value } });
+        })
+      )
+      .pipe(first());
+  }
+
+  private validateSignupApiKey(apiKey: string): Observable<any> {
+    //todo: remove dispatching when validating!
+    this.apiKeyStore.dispatch(updateApiKey({ apiKey }));
     this.isLoading.next(true);
-    return this.api.account.pipe(
+    return this.api.account(apiKey).pipe(
       switchMap((account) => {
         if (account.guilds.includes(guildId)) {
           return this.user.loadUsernames().pipe(
             map((resData) => {
               if (resData !== null && !resData.includes(account.name)) {
-                this.store.dispatch(updateAccount({ account }));
+                this.accountStore.dispatch(updateAccount({ account }));
               } else {
                 throw new Error('This account is already registered!');
               }
