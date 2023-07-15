@@ -37,6 +37,23 @@
         <mat-expansion-panel-header>
           <mat-panel-title> API-Key </mat-panel-title>
         </mat-expansion-panel-header>
+        <!-- <mat-form-field class="full-width-input">
+          <input matInput type="text" formControlName="apiKey" value="{{apiKey$ | async}}"/>
+          <mat-icon *ngIf="" matSuffix color="primary"
+            >accessible_forward</mat-icon
+          >
+          <mat-error>
+            {{
+              validationError === "" ? "API-Key is invalid" : validationError
+            }}</mat-error
+          >
+        </mat-form-field> -->
+        <!-- <form [formGroup]="authForm" (ngSubmit)="">
+          <mat-form-field class="full-width-input">
+            <mat-label>API-Key</mat-label>
+            <input matInput type="text" formControlName="apiKey" value="{{apiKey$ | async}}"/>
+          </mat-form-field>
+        </form> -->
         <input
           matInput
           class="full-width-input"
@@ -55,6 +72,9 @@
             >{{ permission }}</mat-chip-option
           >
         </mat-chip-listbox>
+        <mat-card-actions align="end" style="margin-right: 8px; margin-left: 8px">
+          <button mat-button color="primary">Update API-Key</button>
+        </mat-card-actions>    
       </mat-expansion-panel>
     </mat-card-content>
     <mat-card-actions align="end" style="margin-right: 8px; margin-left: 8px">
