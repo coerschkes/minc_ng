@@ -1,13 +1,12 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { Observable, Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
+import { ApiService } from 'src/app/shared/application/api/api.service';
 import { AccountState } from 'src/app/shared/application/api/model/account.model';
-import {
-  accountSelector,
-  accountValidSelector,
-} from 'src/app/store/api/api.selector';
+import { updateAccount, updateApiKey } from 'src/app/store/api/api.actions';
+import { accountValidSelector } from 'src/app/store/api/api.selector';
 import { ApiKeyValidationService } from '../../shared/application/api-key-validation.service';
 import { SignupService } from './signup.service';
 
@@ -16,60 +15,33 @@ import { SignupService } from './signup.service';
   templateUrl: './signup.component.html',
   styleUrls: ['./signup.component.css'],
 })
-export class SignupComponent implements OnInit, OnDestroy {
+export class SignupComponent implements OnInit {
   accountValid$: Observable<boolean> = new Observable<boolean>();
   authForm: FormGroup = new FormGroup({});
   passwordVisible: boolean = false;
-  isLoading: boolean = false;
   error: string = '';
-  account: AccountState = AccountState.invalid();
-  validationError: string = '';
-
-  //subscriptions
-  isSignupLoadingSub: Subscription = new Subscription();
-  isApiKeyLoadingSub: Subscription = new Subscription();
-  accountSub: Subscription = new Subscription();
-  validationErrorSub: Subscription = new Subscription();
 
   constructor(
-    private apiKeyService: ApiKeyValidationService,
+    public apiKeyValidationService: ApiKeyValidationService,
     private router: Router,
-    private signupService: SignupService,
-    private store: Store<{ account: AccountState }>
+    public signupService: SignupService,
+    private api: ApiService,
+    private accountStore: Store<{ account: AccountState }>,
+    private apiKeyStore: Store<string>
   ) {}
 
   ngOnInit(): void {
-    this.accountValid$ = this.store.select(accountValidSelector);
-    this.isSignupLoadingSub = this.signupService.isLoading.subscribe(
-      (isLoading) => {
-        this.isLoading = isLoading;
-      }
-    );
-    this.accountSub = this.store
-      .select(accountSelector)
-      .subscribe((account) => {
-        this.account = account;
-      });
-    this.isApiKeyLoadingSub = this.apiKeyService.isLoading.subscribe(
-      (isLoading) => {
-        this.isLoading = isLoading;
-      }
-    );
-    this.validationErrorSub = this.apiKeyService.validationError.subscribe(
-      (validationError) => (this.validationError = validationError)
-    );
+    this.accountValid$ = this.accountStore.select(accountValidSelector);
     this.initForm();
   }
 
-  ngOnDestroy(): void {
-    this.isSignupLoadingSub.unsubscribe();
-    this.accountSub.unsubscribe();
-    this.isApiKeyLoadingSub.unsubscribe();
-    this.validationErrorSub.unsubscribe();
-  }
-
   async onSubmit() {
-    if (this.authForm.valid && this.accountValid$) {
+    if (this.authForm.valid) {
+      const validatedApiKey = this.authForm.value.apiKey;
+      this.apiKeyStore.dispatch(updateApiKey({ apiKey: validatedApiKey }));
+      this.api.account(validatedApiKey).subscribe((account) => {
+        this.accountStore.dispatch(updateAccount({ account }));
+      });
       const email = this.authForm.value.email;
       const password = this.authForm.value.password;
       this.signupService.signup(email, password).subscribe({
@@ -102,7 +74,7 @@ export class SignupComponent implements OnInit, OnDestroy {
             '([0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}){2}'
           ),
         ],
-        this.apiKeyService.signupValidator
+        this.apiKeyValidationService.signupValidator
       ),
       email: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', [

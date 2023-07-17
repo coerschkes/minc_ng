@@ -13,7 +13,7 @@ import {
 } from 'rxjs';
 import { ApiService } from 'src/app/shared/application/api/api.service';
 import { UserService } from 'src/app/shared/application/user.service';
-import { updateAccount, updateApiKey } from 'src/app/store/api/api.actions';
+import { updateAccount } from 'src/app/store/api/api.actions';
 import { environment } from 'src/environments/environment';
 import { AccountState } from './api/model/account.model';
 
@@ -72,17 +72,13 @@ export class ApiKeyValidationService {
   }
 
   private validateSignupApiKey(apiKey: string): Observable<any> {
-    //todo: remove dispatching when validating!
-    this.apiKeyStore.dispatch(updateApiKey({ apiKey }));
     this.isLoading.next(true);
     return this.api.account(apiKey).pipe(
       switchMap((account) => {
         if (account.guilds.includes(guildId)) {
           return this.user.loadUsernames().pipe(
             map((resData) => {
-              if (resData !== null && !resData.includes(account.name)) {
-                this.accountStore.dispatch(updateAccount({ account }));
-              } else {
+              if (resData === null || resData.includes(account.name)) {
                 throw new Error('This account is already registered!');
               }
             })

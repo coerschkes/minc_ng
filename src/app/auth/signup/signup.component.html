@@ -7,12 +7,17 @@
       <mat-form-field class="full-width-input">
         <mat-label>API-Key</mat-label>
         <input matInput type="text" formControlName="apiKey" />
-        <mat-icon *ngIf="authForm.get('apiKey')?.valid" matSuffix color="primary"
+        <mat-icon
+          *ngIf="authForm.get('apiKey')?.valid"
+          matSuffix
+          color="primary"
           >accessible_forward</mat-icon
         >
         <mat-error>
           {{
-            validationError === "" ? "API-Key is invalid" : validationError
+            (this.apiKeyValidationService.validationError | async) === ""
+              ? "API-Key is invalid"
+              : (this.apiKeyValidationService.validationError | async)
           }}</mat-error
         >
       </mat-form-field>
@@ -52,7 +57,12 @@
         Create Account
       </button>
     </mat-card-actions>
-    <mat-card-footer *ngIf="isLoading">
+    <mat-card-footer
+      *ngIf="
+        (this.signupService.isLoading | async) ||
+        (this.apiKeyValidationService.isLoading | async)
+      "
+    >
       <mat-progress-bar mode="indeterminate"></mat-progress-bar>
     </mat-card-footer>
   </form>
