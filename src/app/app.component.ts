@@ -26,6 +26,7 @@ export class AppComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    //todo: use pipe map instead of subscribe and forjoin afterwards
     this.authService.autoLogin();
     this.apiKeySub = this.apiKeyStore
       .select(apiKeySelector)

@@ -5,6 +5,7 @@ import { Store } from '@ngrx/store';
 import { map, tap } from 'rxjs/operators';
 import { AccountState } from '../shared/application/api/model/account.model';
 import { NotificationService } from '../shared/application/notification.service';
+import { UserService } from '../shared/application/user.service';
 import { updateAccount } from '../store/api/api.actions';
 import {
   clearExpirationTimer,
@@ -35,6 +36,7 @@ export class AuthService {
     private router: Router,
     private localStorage: LocalStorageService,
     private notificationService: NotificationService,
+    private userService: UserService,
     private principalMapper: PrincipalMapperService,
     private anyStore: Store<any>,
     private principalStore: Store<{ principal: Principal }>,
@@ -54,6 +56,8 @@ export class AuthService {
   }
 
   login(email: string, password: string) {
+    //todo: do i load the apikey here? should be necessary
+    //actually load user object from firebase here?
     return this.http
       .post<AuthResponseData>(firebaseLoginUrl, {
         email: email,
@@ -73,6 +77,7 @@ export class AuthService {
     this.accountStore.dispatch(
       updateAccount({ account: AccountState.invalid() })
     );
+    this.userService.clearUser();
     this.router.navigate(['/auth']);
   }
 
@@ -139,6 +144,7 @@ export class AuthService {
     );
   }
 
+  //toto: maybe check the store integrity (user, account, apikey, principal)
   isLoggedIn() {
     return this.principalStore.select(principalValidSelector);
   }

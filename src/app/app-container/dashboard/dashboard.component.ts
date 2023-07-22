@@ -14,6 +14,9 @@ export class DashboardComponent implements OnInit {
 
   constructor(private store: Store<{ user: UserState }>) {}
 
+  //todo: rework login flow. is the userstate.username the account name or must the account be loaded here to display the right name?
+  //todo: check settings page apikey: why is it so randomly loaded inside the input component? 
+
   ngOnInit(): void {
     this.currentUser$ = this.store.select(userSelector);
   }

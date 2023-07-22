@@ -108,16 +108,23 @@ export class UserService {
       )
       .pipe(
         tap((user: UserState) => {
-          this.store.dispatch(updateUser({ user: user }));
           if (
-            user.apiKey !== '' &&
+            user !== null &&
             user.apiKey !== null &&
-            user.apiKey !== undefined
+            user.apiKey !== undefined &&
+            user.apiKey !== ''
           ) {
-            this.store.dispatch(updateApiKey({ apiKey: user.apiKey }));
+            {
+              this.store.dispatch(updateUser({ user: user }));
+              this.store.dispatch(updateApiKey({ apiKey: user.apiKey }));
+            }
           }
         })
       );
+  }
+
+  clearUser() {
+    this.store.dispatch(updateUser({ user: UserState.invalid() }));
   }
 
   updateUserById(userId: string, user: UserState): Observable<UserState> {
